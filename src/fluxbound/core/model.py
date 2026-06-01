@@ -1,7 +1,8 @@
 from enum import Enum
-
-from .utils import valid_sbml_id, AttrDict
 from math import inf
+
+from .utils import AttrDict, valid_sbml_id
+
 
 class Base:
 
@@ -83,11 +84,11 @@ class GPR:
 
 class ReactionType(Enum):
     """ Enumeration of possible reaction types. """
-    ENZYMATIC = 'enzymatic'
-    TRANSPORT = 'transport'
-    EXCHANGE = 'exchange'
-    UNBALANCED = 'unbalanced'
-    OTHER = 'other'
+    ENZYMATIC   = 'enzymatic'
+    TRANSPORT   = 'transport'
+    EXCHANGE    = 'exchange'
+    UNBALANCED  = 'unbalanced'
+    OTHER       = 'other'
 
 
 class Reaction(Base):
@@ -159,3 +160,37 @@ class Model(Base):
         self.reactions: AttrDict = AttrDict()
         self.objective: AttrDict = AttrDict()
 
+    def add_compartment(self, compartment: Compartment, replace: bool = False):
+
+        if compartment.id in self.compartments and not replace:
+            raise RuntimeError(f"Compartment {compartment.id} already exists.")
+        
+        self.compartments[compartment.id] = compartment
+
+    def add_metabolite(self, met: Metabolite, replace: bool = False):
+
+        if met.id in self.metabolites and not replace:
+            raise RuntimeError(f"Metabolite {met.id} already exists.")
+
+        if met.compartment not in self.compartments:
+            raise RuntimeError(f"Metabolite {met.id} has invalid compartment {met.compartment}.")
+
+        self.metabolites[met.id] = met
+
+    def add_gene(self, gene: Gene, replace: bool = False):
+
+        if gene.id in self.genes and not replace:
+            raise RuntimeError(f"Gene {gene.id} already exists.")
+
+        self.genes[gene.id] = gene
+
+    def add_reaction(self, rxn: Reaction, replace: bool = False):
+
+        if rxn.id in self.reactions and not replace:
+            raise RuntimeError(f"Reaction {rxn.id} already exists.")
+
+        for m_id in rxn.stoichiometry.keys():
+            if m_id not in self.metabolites:
+                raise RuntimeError(f"Reaction {rxn.id} has invalid metabolite {m_id}.")
+
+        self.reactions[rxn.id] = rxn
