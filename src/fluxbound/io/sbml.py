@@ -20,7 +20,7 @@ from ..core.model import (
 )
 from ..core.utils import AttrDict
 
-IDENTIFIERS_PATTERN = re.compile(r'/([^/]+)/([^/]+)$')
+IDENTIFIERS_PATTERN = re.compile(r"/([^/]+)/([^/]+)$")
 
 
 def load_sbml(filename: str) -> SBMLModel:
@@ -34,7 +34,7 @@ def load_sbml(filename: str) -> SBMLModel:
 
     if sbml_model is None:
         document.printErrors()
-        raise IOError(f'Failed to load {filename}.')
+        raise IOError(f"Failed to load {filename}.")
 
     return sbml_model
 
@@ -42,11 +42,10 @@ def load_sbml(filename: str) -> SBMLModel:
 def load_model(filename: str) -> Model:
 
     sbml_model = load_sbml(filename)
-    fbc_model = sbml_model.getPlugin('fbc')
+    fbc_model = sbml_model.getPlugin("fbc")
     is_fbc = fbc_model is not None
 
     params = {p.getId(): p.getValue() for p in sbml_model.getListOfParameters()}
-
 
     model = Model(sbml_model.getId())
     load_compartments(sbml_model, model)
@@ -59,48 +58,55 @@ def load_model(filename: str) -> Model:
 
     return model
 
+
 def load_compartments(sbml_model: SBMLModel, model: Model) -> None:
     for compartment in sbml_model.getListOfCompartments():
         size = compartment.getSize()
         if not isfinite(size):
             size = 1.0
-        external = False #TODO: determine if compartment is external
+        external = False  # TODO: determine if compartment is external
         comp = Compartment(compartment.getId(), compartment.getName(), external, size)
         extract_metadata(compartment, comp)
         model.add_compartment(comp)
 
-    
 
 def load_metabolites(sbml_model: SBMLModel, model: Model, is_fbc: bool) -> None:
     for species in sbml_model.getListOfSpecies():
         met = Metabolite(species.getId(), species.getName(), species.getCompartment())
         extract_metadata(species, met)
         if is_fbc:
-            fbc_species = species.getPlugin('fbc')
+            fbc_species = species.getPlugin("fbc")
             if fbc_species.isSetChemicalFormula():
                 formula = fbc_species.getChemicalFormula()
-                met.metadata['FORMULA'] = formula
+                met.metadata["FORMULA"] = formula
             if fbc_species.isSetCharge():
                 charge = fbc_species.getCharge()
-                met.metadata['CHARGE'] = str(charge)
+                met.metadata["CHARGE"] = str(charge)
         model.add_metabolite(met)
 
+
 def load_genes(sbml_model: SBMLModel, model: Model) -> None:
-    fbc_model = sbml_model.getPlugin('fbc')
+    fbc_model = sbml_model.getPlugin("fbc")
     for fbc_gene in fbc_model.getListOfGeneProducts():
         gene = Gene(fbc_gene.getId(), fbc_gene.getName())
         extract_metadata(fbc_gene, gene)
         model.add_gene(gene)
 
-def load_reactions(sbml_model: SBMLModel, model: Model, is_fbc: bool, params: dict) -> None:
+
+def load_reactions(
+    sbml_model: SBMLModel, model: Model, is_fbc: bool, params: dict
+) -> None:
     for reaction in sbml_model.getListOfReactions():
         stoichiometry = load_stoichiometry(reaction)
         lb, ub = load_bounds(reaction, is_fbc, params)
         gpr = load_gpr(reaction) if is_fbc else None
-        rtype = ReactionType.OTHER #TODO: determine reaction type 
-        rxn = Reaction(reaction.getId(), reaction.getName(), stoichiometry, lb, ub, gpr, rtype)
+        rtype = ReactionType.OTHER  # TODO: determine reaction type
+        rxn = Reaction(
+            reaction.getId(), reaction.getName(), stoichiometry, lb, ub, gpr, rtype
+        )
         extract_metadata(reaction, rxn)
         model.add_reaction(rxn)
+
 
 def load_stoichiometry(reaction: SBMLReaction) -> AttrDict:
     stoichiometry = AttrDict()
@@ -127,9 +133,11 @@ def load_stoichiometry(reaction: SBMLReaction) -> AttrDict:
     return stoichiometry
 
 
-def load_bounds(reaction: SBMLReaction, is_fbc: bool, params: dict) -> tuple[float, float]:   
+def load_bounds(
+    reaction: SBMLReaction, is_fbc: bool, params: dict
+) -> tuple[float, float]:
     if is_fbc:
-        fbc_reaction = reaction.getPlugin('fbc')
+        fbc_reaction = reaction.getPlugin("fbc")
         param_lb = fbc_reaction.getLowerFluxBound()
         param_ub = fbc_reaction.getUpperFluxBound()
         lb = params[param_lb]
@@ -142,18 +150,19 @@ def load_bounds(reaction: SBMLReaction, is_fbc: bool, params: dict) -> tuple[flo
 
 
 def load_gpr(reaction: SBMLReaction) -> str:
-    fbc_reaction = reaction.getPlugin('fbc')
+    fbc_reaction = reaction.getPlugin("fbc")
     fbc_gpr = fbc_reaction.getGeneProductAssociation()
-    
+
     if fbc_gpr is None:
         return None
-    
+
     try:
         gpr = easy_gpr_parse(fbc_gpr)
     except RuntimeError:
         gpr = hard_gpr_parse(fbc_gpr)
-    
+
     return gpr
+
 
 def easy_gpr_parse(fbc_gpr: Association) -> GPR:
     gpr = GPR()
@@ -186,8 +195,9 @@ def easy_gpr_parse(fbc_gpr: Association) -> GPR:
         gpr.proteins = [protein]
     else:
         raise RuntimeError("Unsupported GPR structure")
-    
+
     return gpr
+
 
 def hard_gpr_parse(fbc_gpr: Association) -> GPR:
     sympy_expr = fbc_association_to_sympy(fbc_gpr)
@@ -216,6 +226,7 @@ def hard_gpr_parse(fbc_gpr: Association) -> GPR:
 
     return gpr
 
+
 def fbc_association_to_sympy(node: Association) -> Boolean:
 
     # GeneProductRef
@@ -239,12 +250,11 @@ def fbc_association_to_sympy(node: Association) -> Boolean:
         ]
         return Or(*children)
 
-    raise TypeError(
-        f"Unsupported FBC association type: {node.getElementName()}"
-    )
+    raise TypeError(f"Unsupported FBC association type: {node.getElementName()}")
+
 
 def load_objective(sbml_model: SBMLModel, model: Model) -> None:
-    fbc_model = sbml_model.getPlugin('fbc')
+    fbc_model = sbml_model.getPlugin("fbc")
     objective = fbc_model.getActiveObjective()
 
     for rxn_obj in objective.getListOfFluxObjectives():
@@ -253,12 +263,13 @@ def load_objective(sbml_model: SBMLModel, model: Model) -> None:
         if coeff:
             model.objective[r_id] = coeff
 
+
 def extract_metadata(sbml_elem: SBase, elem: Base) -> None:
-    #TODO: based on old code, check if refactoring is needed
+    # TODO: based on old code, check if refactoring is needed
 
     sboterm = sbml_elem.getSBOTermID()
     if sboterm:
-        elem.metadata['SBOTerm'] = sboterm
+        elem.metadata["SBOTerm"] = sboterm
 
     notes = sbml_elem.getNotes()
     if notes:
@@ -266,21 +277,22 @@ def extract_metadata(sbml_elem: SBase, elem: Base) -> None:
 
     parse_annotations(sbml_elem, elem)
 
+
 def parse_annotations(sbml_elem, elem):
-    #TODO: implemented by Snorre for reframed, check if refactoring is needed
+    # TODO: implemented by Snorre for reframed, check if refactoring is needed
 
     """
     Parse the annotations found in XML Annotations like
     http://identifiers.org/reactome/R-ALL-419151
 
-    There is a question whether all annotations should be added as lists, or 
-    only in those cases where you have multiple annotations from the same db, 
+    There is a question whether all annotations should be added as lists, or
+    only in those cases where you have multiple annotations from the same db,
     and then keep the rest as strings. Now, all annotations gets added as lists.
 
     """
     for term in sbml_elem.getCVTerms():
         n_resources = term.getNumResources()
-        for i  in range(n_resources):
+        for i in range(n_resources):
             match = IDENTIFIERS_PATTERN.search(term.getResourceURI(i))
             if match:
                 db = match.group(1)
@@ -294,13 +306,13 @@ def parse_annotations(sbml_elem, elem):
                     elem.metadata[db].append(db_id)
 
             else:
-                warn(f'Could not extract annotation from {term.getResourceURI(i)}')
+                warn(f"Could not extract annotation from {term.getResourceURI(i)}")
 
 
 def recursive_node_parser(node, cache):
     node_data = node.getCharacters()
-    if ':' in node_data:
-        key, value = node_data.split(':', 1)
+    if ":" in node_data:
+        key, value = node_data.split(":", 1)
         cache[key.strip()] = value.strip()
 
     for i in range(node.getNumChildren()):

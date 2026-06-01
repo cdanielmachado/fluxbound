@@ -1,6 +1,7 @@
 import re
 
-VALID_SBML_ID_REGEX = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_]*$')
+VALID_SBML_ID_REGEX = re.compile(r"^[a-zA-Z_][a-zA-Z0-9_]*$")
+
 
 def valid_sbml_id(x):
     """Test if a string is a valid SBML identifier."""
@@ -18,5 +19,3 @@ class AttrDict(dict):
 
     def __dir__(self):
         return list(self.keys()) + list(super().__dir__())
-    
-
