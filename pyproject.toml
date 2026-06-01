@@ -1,0 +1,14 @@
+[project]
+name = "fluxbound"
+version = "0.1.0"
+description = "A minimalistic python package for flux balance analysis"
+readme = "README.md"
+authors = [
+    { name = "Daniel Machado", email = "cdanielmachado@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = []
+
+[build-system]
+requires = ["uv_build>=0.11.17,<0.12.0"]
+build-backend = "uv_build"
