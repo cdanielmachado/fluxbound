@@ -1,4 +1,5 @@
-from .utils import AttrDict, valid_sbml_id
+from .utils import valid_sbml_id
+
 
 class Base:
 
@@ -20,7 +21,8 @@ class Base:
 
 class Compartment(Base):
     
-    def __init__(self, comp_id: str, name: str | None = None, external: bool = False, size: float = 1.0):
+    def __init__(self, comp_id: str, name: str | None = None, external: bool = False, 
+                 size: float = 1.0):
         """
         Arguments:
             comp_id (str): a valid unique identifier
