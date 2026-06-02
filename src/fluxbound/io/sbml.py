@@ -347,6 +347,7 @@ def save_model(model: Model, filename: str) -> None:
 
     save_compartments(model, sbml_model)
     save_metabolites(model, sbml_model)
+    save_genes(model, sbml_model)
     save_reactions(model, sbml_model)
     save_objective(model, sbml_model)
     save_fluxbounds(model, sbml_model)
@@ -390,6 +391,15 @@ def save_metabolites(model: Model, sbml_model: sb.Model) -> None:
                 pass
 
         save_metadata(met, sbml_met)
+
+
+def save_genes(model: Model, sbml_model: sb.Model) -> None:
+    fbc_model = sbml_model.getPlugin("fbc")
+    for gene in model.genes.values():
+        fbc_gene = fbc_model.createGeneProduct()
+        fbc_gene.setId(gene.id)
+        fbc_gene.setName(gene.name)
+        save_metadata(gene, fbc_gene)
 
 
 def save_reactions(model: Model, sbml_model: sb.Model) -> None:
@@ -464,29 +474,29 @@ def save_fluxbounds(model: Model, sbml_model: sb.Model) -> None:
     for r_id, rxn in model.reactions.items():
         fbcrxn = sbml_model.getReaction(r_id).getPlugin("fbc")
 
-    if rxn.lb == -inf:
-        fbcrxn.setLowerFluxBound("LB_INF")
-    elif rxn.lb == 0:
-        fbcrxn.setLowerFluxBound("ZERO")
-    else:
-        lb_id = f"{r_id}_lb"
-        lb_param = sbml_model.createParameter()
-        lb_param.setId(lb_id)
-        lb_param.setValue(rxn.lb)
-        lb_param.setConstant(True)
-        fbcrxn.setLowerFluxBound(lb_id)
+        if rxn.lb == -inf:
+            fbcrxn.setLowerFluxBound("LB_INF")
+        elif rxn.lb == 0:
+            fbcrxn.setLowerFluxBound("ZERO")
+        else:
+            lb_id = f"{r_id}_lb"
+            lb_param = sbml_model.createParameter()
+            lb_param.setId(lb_id)
+            lb_param.setValue(rxn.lb)
+            lb_param.setConstant(True)
+            fbcrxn.setLowerFluxBound(lb_id)
 
-    if rxn.ub == inf:
-        fbcrxn.setUpperFluxBound("UB_INF")
-    elif rxn.ub == 0:
-        fbcrxn.setUpperFluxBound("ZERO")
-    else:
-        ub_id = f"{r_id}_ub"
-        ub_param = sbml_model.createParameter()
-        ub_param.setId(ub_id)
-        ub_param.setValue(rxn.ub)
-        ub_param.setConstant(True)
-        fbcrxn.setUpperFluxBound(ub_id)
+        if rxn.ub == inf:
+            fbcrxn.setUpperFluxBound("UB_INF")
+        elif rxn.ub == 0:
+            fbcrxn.setUpperFluxBound("ZERO")
+        else:
+            ub_id = f"{r_id}_ub"
+            ub_param = sbml_model.createParameter()
+            ub_param.setId(ub_id)
+            ub_param.setValue(rxn.ub)
+            ub_param.setConstant(True)
+            fbcrxn.setUpperFluxBound(ub_id)
 
 
 def save_metadata(elem: Base, sbml_elem: sb.SBase) -> None:

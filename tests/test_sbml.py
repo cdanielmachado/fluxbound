@@ -29,20 +29,20 @@ def test_sbml_small():
 
 
 def test_sbml_large():
-    model = load_model(TEST_DATA + "Recon3D.xml.gz")
+    model = load_model(TEST_DATA + "iML1515.xml.gz")
     assert model is not None
-    assert len(model.compartments) == 9
-    assert len(model.metabolites) == 5835
-    assert len(model.genes) == 2248
-    assert len(model.reactions) == 10600
+    assert len(model.compartments) == 3
+    assert len(model.metabolites) == 1877
+    assert len(model.genes) == 1516
+    assert len(model.reactions) == 2712
     assert len(model.objective) == 1
 
-    save_model(model, TEST_DATA + "Recon3D_copy.xml.gz")
+    save_model(model, TEST_DATA + "iML1515_copy.xml.gz")
 
-    model2 = load_model(TEST_DATA + "Recon3D_copy.xml.gz")
+    model2 = load_model(TEST_DATA + "iML1515_copy.xml.gz")
     assert model2 is not None
-    assert len(model2.compartments) == 9
-    assert len(model2.metabolites) == 5835
-    assert len(model2.genes) == 2248
-    assert len(model2.reactions) == 10600
+    assert len(model2.compartments) == 3
+    assert len(model2.metabolites) == 1877
+    assert len(model2.genes) == 1516
+    assert len(model2.reactions) == 2712
     assert len(model2.objective) == 1
