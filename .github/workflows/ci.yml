@@ -11,3 +11,4 @@ jobs:
       - run: uv sync --dev
       - run: uv run pytest
       - run: uv run ruff check src
+      - run: uv run pyright
