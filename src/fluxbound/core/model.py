@@ -214,7 +214,7 @@ class Model(Base):
         self.reactions[rxn.id] = rxn
 
     def to_string(self) -> str:
-        return '\n'.join(rxn.to_string() for rxn in self.reactions.values())
-    
+        return "\n".join(rxn.to_string() for rxn in self.reactions.values())
+
     def __str__(self) -> str:
         return self.to_string()

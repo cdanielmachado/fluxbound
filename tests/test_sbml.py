@@ -2,6 +2,7 @@ from pathlib import Path
 
 TEST_DATA = Path(__file__).parent / "data"
 
+
 def test_sbml_import():
     from fluxbound import load_model
 

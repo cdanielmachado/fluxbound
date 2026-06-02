@@ -65,14 +65,23 @@ def load_compartments(sbml_model: sb.Model, model: Model) -> None:
         if not isfinite(size):
             size = 1.0
         external = False  # TODO: determine if compartment is external
-        comp = Compartment(compartment.getId(), name=compartment.getName(), external=external, size=size)
+        comp = Compartment(
+            compartment.getId(),
+            name=compartment.getName(),
+            external=external,
+            size=size,
+        )
         extract_metadata(compartment, comp)
         model.add_compartment(comp)
 
 
 def load_metabolites(sbml_model: sb.Model, model: Model, is_fbc: bool) -> None:
     for species in sbml_model.getListOfSpecies():
-        met = Metabolite(species.getId(), name=species.getName(), compartment=species.getCompartment())
+        met = Metabolite(
+            species.getId(),
+            name=species.getName(),
+            compartment=species.getCompartment(),
+        )
         extract_metadata(species, met)
         if is_fbc:
             fbc_species = species.getPlugin("fbc")
@@ -94,14 +103,21 @@ def load_genes(sbml_model: sb.Model, model: Model) -> None:
 
 
 def load_reactions(
-    sbml_model: sb.Model, model: Model, is_fbc: bool, params: dict) -> None:
+    sbml_model: sb.Model, model: Model, is_fbc: bool, params: dict
+) -> None:
     for reaction in sbml_model.getListOfReactions():
         stoichiometry = load_stoichiometry(reaction)
         lb, ub = load_bounds(reaction, is_fbc, params)
         gpr = load_gpr(reaction) if is_fbc else None
         rtype = ReactionType.OTHER  # TODO: determine reaction type
         rxn = Reaction(
-            reaction.getId(), name=reaction.getName(), stoichiometry=stoichiometry, lb=lb, ub=ub, gpr=gpr, rtype=rtype
+            reaction.getId(),
+            name=reaction.getName(),
+            stoichiometry=stoichiometry,
+            lb=lb,
+            ub=ub,
+            gpr=gpr,
+            rtype=rtype,
         )
         extract_metadata(reaction, rxn)
         model.add_reaction(rxn)
@@ -132,7 +148,9 @@ def load_stoichiometry(reaction: sb.Reaction) -> AttrDict:
     return stoichiometry
 
 
-def load_bounds(reaction: sb.Reaction, is_fbc: bool, params: dict) -> tuple[float, float]:
+def load_bounds(
+    reaction: sb.Reaction, is_fbc: bool, params: dict
+) -> tuple[float, float]:
     if is_fbc:
         fbc_reaction = reaction.getPlugin("fbc")
         param_lb = fbc_reaction.getLowerFluxBound()
@@ -153,7 +171,7 @@ def load_gpr(reaction: sb.Reaction) -> str:
     if fbc_gpr is None:
         return None
     else:
-        fbc_gpr = fbc_gpr.getAssociation() 
+        fbc_gpr = fbc_gpr.getAssociation()
 
     try:
         gpr = easy_gpr_parse(fbc_gpr)
