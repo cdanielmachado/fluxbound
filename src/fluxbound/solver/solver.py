@@ -148,16 +148,16 @@ class Solver:
     def set_objective(self, objective: str | dict, minimize: bool = True):
         pass
 
-    def set_temporary_bounds(self, bounds):
+    def set_temporary_bounds(self, bounds: dict) -> None:
         pass
 
-    def set_bounds(self, bounds):
+    def set_bounds(self, bounds: dict) -> None:
         self.set_temporary_bounds(bounds)
 
-    def reset_bounds(self, bounds):
+    def reset_bounds(self, bounds: dict) -> None:
         pass
 
-    def internal_solve(self):
+    def internal_solve(self) -> None:
         pass
 
     def get_solution(
@@ -165,14 +165,14 @@ class Solver:
         status: Status,
         get_values: bool | list = True,
         shadow_prices: bool = False,
-    ):
+    ) -> Solution:
         pass
 
-    def set_parameter(self, parameter: Parameter, value: float):
+    def set_parameter(self, parameter: Parameter, value: float) -> None:
         raise Exception("Not implemented for this solver.")
 
-    def set_logging(self, enabled: bool = False):
+    def set_logging(self, enabled: bool = False) -> None:
         raise Exception("Not implemented for this solver.")
 
-    def write_to_file(self, filename: str):
+    def write_to_file(self, filename: str) -> None:
         raise Exception("Not implemented for this solver.")
