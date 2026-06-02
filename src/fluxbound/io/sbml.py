@@ -334,3 +334,199 @@ def recursive_node_parser(node: sb.SBase, cache: dict) -> None:
 
     for i in range(node.getNumChildren()):
         recursive_node_parser(node.getChild(i), cache)
+
+
+def save_model(model: Model, filename: str) -> None:
+
+    document = sb.SBMLDocument()
+    sbml_model = document.createModel(model.id)
+    document.enablePackage(sb.FbcExtension.getXmlnsL3V1V2(), "fbc", True)
+    fbc_model = sbml_model.getPlugin("fbc")
+    fbc_model.setStrict(True)
+    document.setPackageRequired("fbc", False)
+
+    save_compartments(model, sbml_model)
+    save_metabolites(model, sbml_model)
+    save_reactions(model, sbml_model)
+    save_objective(model, sbml_model)
+    save_fluxbounds(model, sbml_model)
+    save_metadata(model, sbml_model)
+    writer = sb.SBMLWriter()
+    writer.writeSBML(document, filename)
+
+
+def save_compartments(model: Model, sbml_model: sb.Model) -> None:
+    for comp in model.compartments.values():
+        sbml_comp = sbml_model.createCompartment()
+        sbml_comp.setId(comp.id)
+        sbml_comp.setName(comp.name)
+        sbml_comp.setSize(comp.size)
+        sbml_comp.setConstant(True)
+        save_metadata(comp, sbml_comp)
+
+
+def save_metabolites(model: Model, sbml_model: sb.Model) -> None:
+    for met in model.metabolites.values():
+        sbml_met = sbml_model.createSpecies()
+        sbml_met.setId(met.id)
+        sbml_met.setName(met.name)
+        sbml_met.setCompartment(met.compartment)
+        sbml_met.setConstant(False)
+        sbml_met.setHasOnlySubstanceUnits(True)
+        sbml_met.setBoundaryCondition(False)
+
+        fbc_species = sbml_met.getPlugin("fbc")
+
+        if "FORMULA" in met.metadata:
+            try:
+                fbc_species.setChemicalFormula(met.metadata["FORMULA"])
+            except Exception:
+                pass
+        if "CHARGE" in met.metadata:
+            try:
+                charge = int(met.metadata["CHARGE"])
+                fbc_species.setCharge(charge)
+            except Exception:
+                pass
+
+        save_metadata(met, sbml_met)
+
+
+def save_reactions(model: Model, sbml_model: sb.Model) -> None:
+    for rxn in model.reactions.values():
+        sbml_rxn = sbml_model.createReaction()
+        sbml_rxn.setId(rxn.id)
+        sbml_rxn.setName(rxn.name)
+        sbml_rxn.setReversible(rxn.lb < 0)
+        sbml_rxn.setFast(False)
+
+        for m_id, coeff in rxn.stoichiometry.items():
+            if coeff < 0:
+                reactant = sbml_rxn.createReactant()
+                reactant.setSpecies(m_id)
+                reactant.setStoichiometry(-coeff)
+                reactant.setConstant(True)
+            elif coeff > 0:
+                product = sbml_rxn.createProduct()
+                product.setSpecies(m_id)
+                product.setStoichiometry(coeff)
+                product.setConstant(True)
+
+        if rxn.gpr is not None:
+            fbcrxn = sbml_rxn.getPlugin("fbc")
+            gpr_assoc = fbcrxn.createGeneProductAssociation()
+
+            if len(rxn.gpr.proteins) > 1:
+                gpr_assoc = gpr_assoc.createOr()
+
+            for protein in rxn.gpr.proteins:
+                if len(protein.genes) > 1:
+                    protein_assoc = gpr_assoc.createAnd()
+                else:
+                    protein_assoc = gpr_assoc
+
+                for gene in protein.genes:
+                    gene_ref = protein_assoc.createGeneProductRef()
+                    gene_ref.setGeneProduct(gene)
+
+        save_metadata(rxn, sbml_rxn)
+
+
+def save_objective(model: Model, sbml_model: sb.Model) -> None:
+    fbcmodel = sbml_model.getPlugin("fbc")
+    obj = fbcmodel.createObjective()
+    obj.setId("objective")
+    fbcmodel.setActiveObjectiveId("objective")
+    obj.setType("maximize")
+    for r_id, coeff in model.objective.items():
+        if coeff != 0:
+            r_obj = obj.createFluxObjective()
+            r_obj.setReaction(r_id)
+            r_obj.setCoefficient(coeff)
+
+
+def save_fluxbounds(model: Model, sbml_model: sb.Model) -> None:
+    lb_inf = sbml_model.createParameter()
+    lb_inf.setId("LB_INF")
+    lb_inf.setValue(-inf)
+    lb_inf.setConstant(True)
+
+    ub_inf = sbml_model.createParameter()
+    ub_inf.setId("UB_INF")
+    ub_inf.setValue(inf)
+    ub_inf.setConstant(True)
+
+    zero = sbml_model.createParameter()
+    zero.setId("ZERO")
+    zero.setValue(0.0)
+    zero.setConstant(True)
+
+    for r_id, rxn in model.reactions.items():
+        fbcrxn = sbml_model.getReaction(r_id).getPlugin("fbc")
+
+    if rxn.lb == -inf:
+        fbcrxn.setLowerFluxBound("LB_INF")
+    elif rxn.lb == 0:
+        fbcrxn.setLowerFluxBound("ZERO")
+    else:
+        lb_id = f"{r_id}_lb"
+        lb_param = sbml_model.createParameter()
+        lb_param.setId(lb_id)
+        lb_param.setValue(rxn.lb)
+        lb_param.setConstant(True)
+        fbcrxn.setLowerFluxBound(lb_id)
+
+    if rxn.ub == inf:
+        fbcrxn.setUpperFluxBound("UB_INF")
+    elif rxn.ub == 0:
+        fbcrxn.setUpperFluxBound("ZERO")
+    else:
+        ub_id = f"{r_id}_ub"
+        ub_param = sbml_model.createParameter()
+        ub_param.setId(ub_id)
+        ub_param.setValue(rxn.ub)
+        ub_param.setConstant(True)
+        fbcrxn.setUpperFluxBound(ub_id)
+
+
+def save_metadata(elem: Base, sbml_elem: sb.SBase) -> None:
+    # TODO: based on old code, check if refactoring is needed
+
+    meta_id = f"meta_{sbml_elem.getId()}"
+    sbml_elem.setMetaId(meta_id)
+    note_keys = ["CHARGE", "FORMULA"]
+    notes_dict = {}
+
+    if elem.metadata:
+        for key, annotations in elem.metadata.items():
+            if key == "SBOTerm":
+                sbml_elem.setSBOTerm(annotations)
+            elif key in note_keys:
+                notes_dict[key] = annotations
+            elif key == "XMLAnnotation":
+                continue
+            else:
+                # Assume this is an annotation
+                if not isinstance(annotations, list):
+                    annotations = [annotations]
+                for annotation in annotations:
+                    if annotation:
+                        cv = sb.CVTerm()
+                        cv.setQualifierType(sb.BIOLOGICAL_QUALIFIER)
+                        cv.setBiologicalQualifierType(sb.BQB_IS)
+                        annotation_string = (
+                            f"https://identifiers.org/{key}/{annotation}"
+                        )
+                        cv.addResource(annotation_string)
+                        sbml_elem.addCVTerm(cv)
+
+    if len(notes_dict):
+        notes = [
+            f"<p>{key}: {re.escape(value)}</p>"
+            for key, value in notes_dict.items()
+            if key != "XMLAnnotation"
+        ]
+        note_string = "<html>" + "".join(notes) + "</html>"
+        note_xml = sb.XMLNode.convertStringToXMLNode(note_string)
+        note_xml.getNamespaces().add("http://www.w3.org/1999/xhtml")
+        sbml_elem.setNotes(note_xml)

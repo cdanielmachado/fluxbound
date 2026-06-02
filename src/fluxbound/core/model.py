@@ -79,7 +79,7 @@ class GPR:
         return str(self)
 
     def get_genes(self):
-        return [gene for protein in self.proteins for gene in protein.genes]
+        return {gene for protein in self.proteins for gene in protein.genes}
 
 
 class ReactionType(Enum):
