@@ -3,7 +3,7 @@ import re
 from math import inf, isfinite
 from warnings import warn
 
-from libsbml import Association, SBase, SBMLModel, SBMLReaction, SBMLReader
+import libsbml as sb
 from sympy import Symbol
 from sympy.logic.boolalg import And, Boolean, Or, is_dnf, to_dnf
 
@@ -23,12 +23,12 @@ from ..core.utils import AttrDict
 IDENTIFIERS_PATTERN = re.compile(r"/([^/]+)/([^/]+)$")
 
 
-def load_sbml(filename: str) -> SBMLModel:
+def load_sbml(filename: str) -> sb.Model:
 
     if not os.path.exists(filename):
         raise IOError("Model file not found")
 
-    reader = SBMLReader()
+    reader = sb.SBMLReader()
     document = reader.readSBML(filename)
     sbml_model = document.getModel()
 
@@ -59,20 +59,20 @@ def load_model(filename: str) -> Model:
     return model
 
 
-def load_compartments(sbml_model: SBMLModel, model: Model) -> None:
+def load_compartments(sbml_model: sb.Model, model: Model) -> None:
     for compartment in sbml_model.getListOfCompartments():
         size = compartment.getSize()
         if not isfinite(size):
             size = 1.0
         external = False  # TODO: determine if compartment is external
-        comp = Compartment(compartment.getId(), compartment.getName(), external, size)
+        comp = Compartment(compartment.getId(), name=compartment.getName(), external=external, size=size)
         extract_metadata(compartment, comp)
         model.add_compartment(comp)
 
 
-def load_metabolites(sbml_model: SBMLModel, model: Model, is_fbc: bool) -> None:
+def load_metabolites(sbml_model: sb.Model, model: Model, is_fbc: bool) -> None:
     for species in sbml_model.getListOfSpecies():
-        met = Metabolite(species.getId(), species.getName(), species.getCompartment())
+        met = Metabolite(species.getId(), name=species.getName(), compartment=species.getCompartment())
         extract_metadata(species, met)
         if is_fbc:
             fbc_species = species.getPlugin("fbc")
@@ -85,7 +85,7 @@ def load_metabolites(sbml_model: SBMLModel, model: Model, is_fbc: bool) -> None:
         model.add_metabolite(met)
 
 
-def load_genes(sbml_model: SBMLModel, model: Model) -> None:
+def load_genes(sbml_model: sb.Model, model: Model) -> None:
     fbc_model = sbml_model.getPlugin("fbc")
     for fbc_gene in fbc_model.getListOfGeneProducts():
         gene = Gene(fbc_gene.getId(), fbc_gene.getName())
@@ -94,21 +94,20 @@ def load_genes(sbml_model: SBMLModel, model: Model) -> None:
 
 
 def load_reactions(
-    sbml_model: SBMLModel, model: Model, is_fbc: bool, params: dict
-) -> None:
+    sbml_model: sb.Model, model: Model, is_fbc: bool, params: dict) -> None:
     for reaction in sbml_model.getListOfReactions():
         stoichiometry = load_stoichiometry(reaction)
         lb, ub = load_bounds(reaction, is_fbc, params)
         gpr = load_gpr(reaction) if is_fbc else None
         rtype = ReactionType.OTHER  # TODO: determine reaction type
         rxn = Reaction(
-            reaction.getId(), reaction.getName(), stoichiometry, lb, ub, gpr, rtype
+            reaction.getId(), name=reaction.getName(), stoichiometry=stoichiometry, lb=lb, ub=ub, gpr=gpr, rtype=rtype
         )
         extract_metadata(reaction, rxn)
         model.add_reaction(rxn)
 
 
-def load_stoichiometry(reaction: SBMLReaction) -> AttrDict:
+def load_stoichiometry(reaction: sb.Reaction) -> AttrDict:
     stoichiometry = AttrDict()
     for reactant in reaction.getListOfReactants():
         m_id = reactant.getSpecies()
@@ -133,9 +132,7 @@ def load_stoichiometry(reaction: SBMLReaction) -> AttrDict:
     return stoichiometry
 
 
-def load_bounds(
-    reaction: SBMLReaction, is_fbc: bool, params: dict
-) -> tuple[float, float]:
+def load_bounds(reaction: sb.Reaction, is_fbc: bool, params: dict) -> tuple[float, float]:
     if is_fbc:
         fbc_reaction = reaction.getPlugin("fbc")
         param_lb = fbc_reaction.getLowerFluxBound()
@@ -149,12 +146,14 @@ def load_bounds(
     return lb, ub
 
 
-def load_gpr(reaction: SBMLReaction) -> str:
+def load_gpr(reaction: sb.Reaction) -> str:
     fbc_reaction = reaction.getPlugin("fbc")
     fbc_gpr = fbc_reaction.getGeneProductAssociation()
 
     if fbc_gpr is None:
         return None
+    else:
+        fbc_gpr = fbc_gpr.getAssociation() 
 
     try:
         gpr = easy_gpr_parse(fbc_gpr)
@@ -164,7 +163,7 @@ def load_gpr(reaction: SBMLReaction) -> str:
     return gpr
 
 
-def easy_gpr_parse(fbc_gpr: Association) -> GPR:
+def easy_gpr_parse(fbc_gpr: sb.Association) -> GPR:
     gpr = GPR()
 
     if fbc_gpr.isFbcOr():
@@ -199,7 +198,7 @@ def easy_gpr_parse(fbc_gpr: Association) -> GPR:
     return gpr
 
 
-def hard_gpr_parse(fbc_gpr: Association) -> GPR:
+def hard_gpr_parse(fbc_gpr: sb.Association) -> GPR:
     sympy_expr = fbc_association_to_sympy(fbc_gpr)
 
     if not is_dnf(sympy_expr):
@@ -227,7 +226,7 @@ def hard_gpr_parse(fbc_gpr: Association) -> GPR:
     return gpr
 
 
-def fbc_association_to_sympy(node: Association) -> Boolean:
+def fbc_association_to_sympy(node: sb.Association) -> Boolean:
 
     # GeneProductRef
     if node.isGeneProductRef():
@@ -253,7 +252,7 @@ def fbc_association_to_sympy(node: Association) -> Boolean:
     raise TypeError(f"Unsupported FBC association type: {node.getElementName()}")
 
 
-def load_objective(sbml_model: SBMLModel, model: Model) -> None:
+def load_objective(sbml_model: sb.Model, model: Model) -> None:
     fbc_model = sbml_model.getPlugin("fbc")
     objective = fbc_model.getActiveObjective()
 
@@ -264,7 +263,7 @@ def load_objective(sbml_model: SBMLModel, model: Model) -> None:
             model.objective[r_id] = coeff
 
 
-def extract_metadata(sbml_elem: SBase, elem: Base) -> None:
+def extract_metadata(sbml_elem: sb.SBase, elem: Base) -> None:
     # TODO: based on old code, check if refactoring is needed
 
     sboterm = sbml_elem.getSBOTermID()
@@ -278,7 +277,7 @@ def extract_metadata(sbml_elem: SBase, elem: Base) -> None:
     parse_annotations(sbml_elem, elem)
 
 
-def parse_annotations(sbml_elem, elem):
+def parse_annotations(sbml_elem: sb.SBase, elem: Base) -> None:
     # TODO: implemented by Snorre for reframed, check if refactoring is needed
 
     """
@@ -309,7 +308,7 @@ def parse_annotations(sbml_elem, elem):
                 warn(f"Could not extract annotation from {term.getResourceURI(i)}")
 
 
-def recursive_node_parser(node, cache):
+def recursive_node_parser(node: sb.SBase, cache: dict) -> None:
     node_data = node.getCharacters()
     if ":" in node_data:
         key, value = node_data.split(":", 1)

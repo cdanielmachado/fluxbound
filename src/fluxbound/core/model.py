@@ -160,7 +160,7 @@ class Reaction(Base):
         else:
             bounds = ""
 
-        return f"{lhs} {arrow} {rhs}{bounds}"
+        return f"{self.id}: {lhs} {arrow} {rhs}{bounds}"
 
     def __str__(self) -> str:
         return self.to_string()
@@ -212,3 +212,9 @@ class Model(Base):
                 raise RuntimeError(f"Reaction {rxn.id} has invalid metabolite {m_id}.")
 
         self.reactions[rxn.id] = rxn
+
+    def to_string(self) -> str:
+        return '\n'.join(rxn.to_string() for rxn in self.reactions.values())
+    
+    def __str__(self) -> str:
+        return self.to_string()

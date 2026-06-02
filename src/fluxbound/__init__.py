@@ -1,2 +1,2 @@
-def hello() -> str:
-    return "Hello from fluxbound!"
+from .io.sbml import load_model
+
