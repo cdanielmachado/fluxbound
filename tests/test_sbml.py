@@ -17,6 +17,16 @@ def test_sbml_small():
 
     save_model(model, TEST_DATA + "e_coli_core_copy.xml")
 
+    model2 = load_model(TEST_DATA + "e_coli_core_copy.xml")
+    assert model2 is not None
+    assert len(model2.compartments) == 2
+    assert len(model2.metabolites) == 72
+    assert len(model2.genes) == 137
+    assert len(model2.reactions) == 95
+    assert len(model2.objective) == 1
+
+    save_model(model, TEST_DATA + "e_coli_core_copy.xml")
+
 
 def test_sbml_large():
     model = load_model(TEST_DATA + "Recon3D.xml.gz")
@@ -28,3 +38,11 @@ def test_sbml_large():
     assert len(model.objective) == 1
 
     save_model(model, TEST_DATA + "Recon3D_copy.xml.gz")
+
+    model2 = load_model(TEST_DATA + "Recon3D_copy.xml.gz")
+    assert model2 is not None
+    assert len(model2.compartments) == 9
+    assert len(model2.metabolites) == 5835
+    assert len(model2.genes) == 2248
+    assert len(model2.reactions) == 10600
+    assert len(model2.objective) == 1
