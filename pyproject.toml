@@ -11,6 +11,7 @@ dependencies = [
     "python-libsbml",
     "sympy",
     "pandas",
+    "pyscipopt",
 ]
 keywords = ["flux balance analysis", "metabolic modeling"]
 classifiers = [

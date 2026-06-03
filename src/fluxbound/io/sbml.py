@@ -379,16 +379,19 @@ def save_metabolites(model: Model, sbml_model: sb.Model) -> None:
         fbc_species = sbml_met.getPlugin("fbc")
 
         if "FORMULA" in met.metadata:
+            formula = met.metadata["FORMULA"]
             try:
-                fbc_species.setChemicalFormula(met.metadata["FORMULA"])
-            except Exception:
-                pass
+                fbc_species.setChemicalFormula(formula)
+            except Exception as e:
+                warn(f"Failed to set formula '{formula}' for {met.id}: {e}")
         if "CHARGE" in met.metadata:
             try:
                 charge = int(met.metadata["CHARGE"])
                 fbc_species.setCharge(charge)
-            except Exception:
-                pass
+            except Exception as e:
+                warn(
+                    f"Failed to set charge '{met.metadata['CHARGE']}' for {met.id}: {e}"
+                )
 
         save_metadata(met, sbml_met)
 
