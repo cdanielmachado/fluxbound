@@ -5,7 +5,7 @@ from fluxbound import load_model, save_model
 TEST_DATA = str(Path(__file__).parent) + "/data/"
 
 
-def test_sbml_small():
+def test_sbml_core():
 
     model = load_model(TEST_DATA + "e_coli_core.xml")
     assert model is not None
@@ -28,7 +28,7 @@ def test_sbml_small():
     save_model(model, TEST_DATA + "e_coli_core_copy.xml")
 
 
-def test_sbml_large():
+def test_sbml_gem():
     model = load_model(TEST_DATA + "iML1515.xml.gz")
     assert model is not None
     assert len(model.compartments) == 3

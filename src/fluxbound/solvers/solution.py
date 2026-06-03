@@ -31,7 +31,7 @@ class Solution:
         self.shadow_prices: dict | None = shadow_prices
 
     def __str__(self):
-        return f"Objective: {self.fobj}\nStatus: {self.status.value}\n"
+        return f"Objective: {self.fobj:.5g}\nStatus: {self.status.value}\n"
 
     def __repr__(self):
         return str(self)
