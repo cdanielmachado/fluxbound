@@ -101,7 +101,7 @@ class Solver:
 
     def solve(
         self,
-        objective: dict | None = None,
+        objective: str | dict | None = None,
         minimize: bool = True,
         model: Model | None = None,
         constraints: dict | None = None,
