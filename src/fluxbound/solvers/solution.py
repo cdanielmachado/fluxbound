@@ -1,5 +1,7 @@
 import re
 from enum import Enum
+from typing import Self
+from warnings import warn
 
 import pandas as pd
 
@@ -13,6 +15,28 @@ class Status(Enum):
     UNBOUNDED = "Unbounded"
     INFEASIBLE = "Infeasible"
     INF_OR_UNB = "Infeasible or Unbounded"
+
+
+def pretty_print_values(
+    values: dict, pattern: str | None = None, sort: bool = False, abstol: float = 1e-9
+):
+
+    values = {key: value for key, value in values.items() if abs(value) > abstol}
+
+    if pattern:
+        re_expr = re.compile(pattern)
+        values = {
+            key: value
+            for key, value in values.items()
+            if re_expr.search(key) is not None
+        }
+
+    if sort:
+        values = dict(sorted(values.items(), key=lambda x: x[1]))
+
+    entries = (f"{key:<12} {value: .4g}" for key, value in values.items())
+
+    print("\n".join(entries))
 
 
 class Solution:
@@ -31,32 +55,39 @@ class Solution:
         self.shadow_prices: dict | None = shadow_prices
 
     def __str__(self):
-        return f"Objective: {self.fobj:.5g}\nStatus: {self.status.value}\n"
+        return f"Objective: {self.fobj:.4g}\nStatus: {self.status.value}\n"
 
     def __repr__(self):
         return str(self)
 
     def show_values(
         self, pattern: str | None = None, sort: bool = False, abstol: float = 1e-9
-    ):
+    ) -> None:
 
         if self.values is None:
-            return
+            warn("No solution to show")
+        else:
+            pretty_print_values(self.values, pattern=pattern, sort=sort, abstol=abstol)
 
-        values = [
-            (key, value) for key, value in self.values.items() if abs(value) > abstol
-        ]
+    def compare(
+        self,
+        other: Self,
+        intersect=True,
+        pattern: str | None = None,
+        sort: bool = False,
+        abstol: float = 1e-9,
+    ) -> None:
+        if self.values is None or other.values is None:
+            warn("One or both solutions are empty")
+        else:
+            values = {}
+            for key, val in self.values.items():
+                if key in other.values:
+                    values[key] = val - other.values[key]
+                elif not intersect:
+                    values[key] = val
 
-        if pattern:
-            re_expr = re.compile(pattern)
-            values = [x for x in values if re_expr.search(x[0]) is not None]
-
-        if sort:
-            values.sort(key=lambda x: x[1])
-
-        entries = (f"{r_id:<12} {val: .6g}" for (r_id, val) in values)
-
-        print("\n".join(entries))
+            pretty_print_values(values, pattern=pattern, sort=sort, abstol=abstol)
 
     def to_dataframe(self) -> pd.DataFrame | None:
         if self.values is None:

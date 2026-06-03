@@ -39,6 +39,7 @@ class Solver:
         self.constraints: list = []
         self.objective: dict = {}
         self.minimize: bool = True
+        self.reuse_for: str | None = None
         self._cached_vars: dict = {}
         self._cached_constrs: dict = {}
 
