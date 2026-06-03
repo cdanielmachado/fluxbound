@@ -32,9 +32,9 @@ class Solver:
     All solver interfaces should implement the methods defined in this class.
     """
 
-    def __init__(self, model: Model = None):
+    def __init__(self, model: Model | None = None):
         self.problem = None
-        self.model: Model = model
+        self.model: Model | None = model
         self.variables: list = []
         self.constraints: list = []
         self.objective: dict = {}
@@ -101,10 +101,10 @@ class Solver:
 
     def solve(
         self,
-        objective: dict = None,
+        objective: dict | None = None,
         minimize: bool = True,
-        model: Model = None,
-        constraints: dict = None,
+        model: Model | None = None,
+        constraints: dict | None = None,
         get_values: bool | list = True,
         shadow_prices: bool = False,
     ) -> Solution:
@@ -115,7 +115,7 @@ class Solver:
             minimize: solve a minimization problem (default: True)
             model : model (optional, leave blank to reuse previous model structure)
             constraints : additional constraints (optional)
-            get_values: yes/no or list of variables to return values for 
+            get_values: yes/no or list of variables to return values for
             shadow_prices: return shadow prices if available (default: False)
 
         Returns:
@@ -141,15 +141,15 @@ class Solver:
             solution = Solution(status)
 
         if constraints:
-            self.reset_bounds(old_bounds)
+            self.reset_bounds(old_bounds)  # pyright: ignore[reportPossiblyUnboundVariable]
 
         return solution
 
     def set_objective(self, objective: str | dict, minimize: bool = True):
         pass
 
-    def set_temporary_bounds(self, bounds: dict) -> None:
-        pass
+    def set_temporary_bounds(self, bounds: dict) -> dict:
+        return {}
 
     def set_bounds(self, bounds: dict) -> None:
         self.set_temporary_bounds(bounds)
@@ -157,8 +157,8 @@ class Solver:
     def reset_bounds(self, bounds: dict) -> None:
         pass
 
-    def internal_solve(self) -> None:
-        pass
+    def internal_solve(self) -> Status:
+        return Status.UNKNOWN
 
     def get_solution(
         self,
@@ -166,7 +166,7 @@ class Solver:
         get_values: bool | list = True,
         shadow_prices: bool = False,
     ) -> Solution:
-        pass
+        return Solution(status)
 
     def set_parameter(self, parameter: Parameter, value: float) -> None:
         raise Exception("Not implemented for this solver.")

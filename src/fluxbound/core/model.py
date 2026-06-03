@@ -175,8 +175,11 @@ class Model(Base):
         self.genes: AttrDict = AttrDict()
         self.reactions: AttrDict = AttrDict()
         self.objective: AttrDict = AttrDict()
+        self._updated: bool = True
+        self._met_rxn_lookup: dict | None = None
 
     def add_compartment(self, compartment: Compartment, replace: bool = False):
+        self._updated = False
 
         if compartment.id in self.compartments and not replace:
             raise RuntimeError(f"Compartment {compartment.id} already exists.")
@@ -184,6 +187,7 @@ class Model(Base):
         self.compartments[compartment.id] = compartment
 
     def add_metabolite(self, met: Metabolite, replace: bool = False):
+        self._updated = False
 
         if met.id in self.metabolites and not replace:
             raise RuntimeError(f"Metabolite {met.id} already exists.")
@@ -196,6 +200,7 @@ class Model(Base):
         self.metabolites[met.id] = met
 
     def add_gene(self, gene: Gene, replace: bool = False):
+        self._updated = False
 
         if gene.id in self.genes and not replace:
             raise RuntimeError(f"Gene {gene.id} already exists.")
@@ -203,6 +208,7 @@ class Model(Base):
         self.genes[gene.id] = gene
 
     def add_reaction(self, rxn: Reaction, replace: bool = False):
+        self._updated = False
 
         if rxn.id in self.reactions and not replace:
             raise RuntimeError(f"Reaction {rxn.id} already exists.")
@@ -218,3 +224,21 @@ class Model(Base):
 
     def __str__(self) -> str:
         return self.to_string()
+
+    def update(self) -> None:
+        self._updated = True
+        self._met_rxn_lookup = None
+
+    def metabolite_reaction_lookup(self) -> dict:
+
+        if not self._updated:
+            self.update()
+
+        if not self._met_rxn_lookup:
+            self._met_rxn_lookup = {m_id: {} for m_id in self.metabolites}
+
+            for r_id, reaction in self.reactions.items():
+                for m_id, coeff in reaction.stoichiometry.items():
+                    self._met_rxn_lookup[m_id][r_id] = coeff
+
+        return self._met_rxn_lookup

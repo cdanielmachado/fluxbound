@@ -29,7 +29,7 @@ def load_sbml(filename: str) -> sb.Model:
         raise IOError("Model file not found")
 
     reader = sb.SBMLReader()
-    document = reader.readSBML(filename)
+    document = reader.readSBML(filename)  # pyright: ignore[reportArgumentType]
     sbml_model = document.getModel()
 
     if sbml_model is None:
@@ -164,7 +164,7 @@ def load_bounds(
     return lb, ub
 
 
-def load_gpr(reaction: sb.Reaction) -> str:
+def load_gpr(reaction: sb.Reaction) -> GPR | None:
     fbc_reaction = reaction.getPlugin("fbc")
     fbc_gpr = fbc_reaction.getGeneProductAssociation()
 
@@ -185,7 +185,7 @@ def easy_gpr_parse(fbc_gpr: sb.Association) -> GPR:
     gpr = GPR()
 
     if fbc_gpr.isFbcOr():
-        for item in fbc_gpr.getListOfAssociations():
+        for item in fbc_gpr.getListOfAssociations():  # pyright: ignore[reportAttributeAccessIssue]
             protein = Protein()
             if item.isFbcAnd():
                 for subitem in item.getListOfAssociations():
@@ -200,7 +200,7 @@ def easy_gpr_parse(fbc_gpr: sb.Association) -> GPR:
             gpr.proteins.append(protein)
     elif fbc_gpr.isFbcAnd():
         protein = Protein()
-        for item in fbc_gpr.getListOfAssociations():
+        for item in fbc_gpr.getListOfAssociations():  # pyright: ignore[reportAttributeAccessIssue]
             if item.isGeneProductRef():
                 protein.genes.append(item.getGeneProduct())
             else:
@@ -208,7 +208,7 @@ def easy_gpr_parse(fbc_gpr: sb.Association) -> GPR:
         gpr.proteins = [protein]
     elif fbc_gpr.isGeneProductRef():
         protein = Protein()
-        protein.genes = [fbc_gpr.getGeneProduct()]
+        protein.genes = [fbc_gpr.getGeneProduct()]  # pyright: ignore[reportAttributeAccessIssue]
         gpr.proteins = [protein]
     else:
         raise RuntimeError("Unsupported GPR structure")
@@ -248,13 +248,13 @@ def fbc_association_to_sympy(node: sb.Association) -> Boolean:
 
     # GeneProductRef
     if node.isGeneProductRef():
-        gene_id = node.getGeneProduct()
+        gene_id = node.getGeneProduct()  # pyright: ignore[reportAttributeAccessIssue]
         return Symbol(gene_id)
 
     # And
     if node.isFbcAnd():
         children = [
-            fbc_association_to_sympy(node.getAssociation(i))
+            fbc_association_to_sympy(node.getAssociation(i))  # pyright: ignore[reportAttributeAccessIssue]
             for i in range(node.getNumAssociations())
         ]
         return And(*children)
@@ -262,7 +262,7 @@ def fbc_association_to_sympy(node: sb.Association) -> Boolean:
     # Or
     if node.isFbcOr():
         children = [
-            fbc_association_to_sympy(node.getAssociation(i))
+            fbc_association_to_sympy(node.getAssociation(i))  # pyright: ignore[reportAttributeAccessIssue]
             for i in range(node.getNumAssociations())
         ]
         return Or(*children)
@@ -326,7 +326,7 @@ def parse_annotations(sbml_elem: sb.SBase, elem: Base) -> None:
                 warn(f"Could not extract annotation from {term.getResourceURI(i)}")
 
 
-def recursive_node_parser(node: sb.SBase, cache: dict) -> None:
+def recursive_node_parser(node: sb.XMLNode, cache: dict) -> None:
     node_data = node.getCharacters()
     if ":" in node_data:
         key, value = node_data.split(":", 1)

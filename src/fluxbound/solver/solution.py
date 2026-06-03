@@ -58,7 +58,12 @@ class Solution:
 
         print("\n".join(entries))
 
-    def to_dataframe(self):
-        return pd.DataFrame(
-            self.values.values(), columns=["value"], index=self.values.keys()
-        )
+    def to_dataframe(self) -> pd.DataFrame | None:
+        if self.values is None:
+            return None
+        else:
+            return pd.DataFrame(
+                list(self.values.values()),
+                columns=["value"],
+                index=list(self.values.keys()),
+            )
