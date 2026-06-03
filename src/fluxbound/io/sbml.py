@@ -399,6 +399,7 @@ def save_genes(model: Model, sbml_model: sb.Model) -> None:
         fbc_gene = fbc_model.createGeneProduct()
         fbc_gene.setId(gene.id)
         fbc_gene.setName(gene.name)
+        fbc_gene.setLabel(gene.name)
         save_metadata(gene, fbc_gene)
 
 
