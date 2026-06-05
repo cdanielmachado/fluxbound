@@ -81,11 +81,11 @@ class GurobiSolver(Solver):
 
     def remove_constraint(self, constr_id: str) -> None:
         if constr_id in self.constraints:
-            self.problem.remove(self.problem.getConstrByName(constr_id))  # pyright: ignore[reportAttributeAccessIssue]
+            self.problem.remove(self.problem.getConstrByName(constr_id))  # pyright: ignore[reportArgumentType, reportCallIssue, reportAttributeAccessIssue]
         else:
             print("Constraint not in problem:", constr_id)
 
-    def set_objective(self, objective: str | dict, minimize: bool = True):
+    def set_objective(self, objective: str | dict, minimize: bool = True) -> None:
 
         if isinstance(objective, str):
             objective = {objective: 1.0}
@@ -104,31 +104,40 @@ class GurobiSolver(Solver):
         self.objective = objective
         self.minimize = minimize
 
-    def internal_solve(self):
+    def internal_solve(self) -> Status:
         self.problem.optimize()  # pyright: ignore[reportAttributeAccessIssue]
         status = status_mapping.get(self.problem.status, Status.UNKNOWN)  # pyright: ignore[reportAttributeAccessIssue]
         return status
 
-    def get_solution(self, status, get_values=True, shadow_prices=False):
+    def get_solution(
+        self,
+        status: Status,
+        get_values: bool | list = True,
+        shadow_prices: bool = False,
+    ) -> Solution:
 
         fobj = self.problem.ObjVal  # pyright: ignore[reportAttributeAccessIssue]
 
         if get_values:
             if isinstance(get_values, list):
-                values = {
-                    r_id: self.problem.getVarByName(r_id).X for r_id in get_values
-                }  # pyright: ignore[reportAttributeAccessIssue]
+                var_list = get_values
             else:
-                values = {
-                    r_id: self.problem.getVarByName(r_id).X for r_id in self.variables
-                }  # pyright: ignore[reportAttributeAccessIssue]
+                var_list = self.variables
+
+            values = {}
+            for r_id in var_list:
+                var = self.problem.getVarByName(r_id)
+                value = var.X  # pyright: ignore[reportOptionalMemberAccess]
+                values[r_id] = value
         else:
             values = None
 
         if shadow_prices:
-            s_prices = {
-                m_id: self.problem.getConstrByName(m_id).Pi for m_id in self.constraints
-            }  # pyright: ignore[reportAttributeAccessIssue]
+            s_prices = {}
+            for m_id in self.constraints:
+                constr = self.problem.getConstrByName(m_id)
+                value = constr.Pi  # pyright: ignore[reportOptionalMemberAccess]
+                s_prices[m_id] = value
         else:
             s_prices = None
 
@@ -140,10 +149,10 @@ class GurobiSolver(Solver):
         for r_id, x in bounds.items():
             lb, ub = x if isinstance(x, tuple) else (x, x)
             if r_id in self.variables:
-                lpvar = self.problem.getVarByName(r_id)  # pyright: ignore[reportAttributeAccessIssue]
-                old_constraints[r_id] = (lpvar.lb, lpvar.ub)
-                lpvar.lb = infinity_fix(lb)
-                lpvar.ub = infinity_fix(ub)
+                lpvar = self.problem.getVarByName(r_id)  # pyright: ignore[reportAttributeAccessIssue, reportOptionalMemberAccess]
+                old_constraints[r_id] = (lpvar.lb, lpvar.ub)  # pyright: ignore[reportAttributeAccessIssue, reportOptionalMemberAccess]
+                lpvar.lb = infinity_fix(lb)  # pyright: ignore[reportAttributeAccessIssue, reportOptionalMemberAccess]
+                lpvar.ub = infinity_fix(ub)  # pyright: ignore[reportAttributeAccessIssue, reportOptionalMemberAccess]
             else:
                 warn(f"Constrained variable '{r_id}' not previously declared")
 
@@ -155,7 +164,7 @@ class GurobiSolver(Solver):
 
         for r_id, (lb, ub) in bounds.items():
             lpvar = self.problem.getVarByName(r_id)  # pyright: ignore[reportAttributeAccessIssue]
-            lpvar.lb, lpvar.ub = lb, ub
+            lpvar.lb, lpvar.ub = lb, ub  # pyright: ignore[reportAttributeAccessIssue, reportOptionalMemberAccess]
         self.problem.update()  # pyright: ignore[reportAttributeAccessIssue]
 
     def set_parameter(self, parameter: Parameter, value: float) -> None:
