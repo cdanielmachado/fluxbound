@@ -10,6 +10,20 @@ try:
 except ImportError:
     pass
 
+try:
+    from .gurobi_wrapper import GurobiSolver
+
+    available_solvers["gurobi"] = GurobiSolver
+except ImportError:
+    pass
+
+try:
+    from .cplex_wrapper import CplexSolver
+
+    available_solvers["gurobi"] = GurobiSolver
+except ImportError:
+    pass
+
 
 default_solver: str | None = None
 
@@ -41,7 +55,8 @@ def set_default_solver(solvername: str) -> None:
     if solvername.lower() in list(available_solvers.keys()):
         default_solver = solvername.lower()
     else:
-        raise RuntimeError(f"Solver {solvername} not available.")
+        available = ', '.join(list(available_solvers.keys()))
+        raise RuntimeError(f"{solvername} not in available solvers: {available}")
 
 
 def solver_instance(model: Model | None = None) -> Solver:
