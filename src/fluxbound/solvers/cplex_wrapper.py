@@ -46,14 +46,14 @@ class CplexSolver(Solver):
 
         parameters = self.problem.parameters
         self.parameter_mapping: dict = {
-            Parameter.TIME_LIMIT: parameters.timelimit,
-            Parameter.FEASIBILITY_TOL: parameters.simplex.tolerances.feasibility,
-            Parameter.OPTIMALITY_TOL: parameters.simplex.tolerances.optimality,
-            Parameter.INT_FEASIBILITY_TOL: parameters.mip.tolerances.integrality,
-            Parameter.MIP_ABS_GAP: parameters.mip.tolerances.mipgap,
-            Parameter.MIP_REL_GAP: parameters.mip.tolerances.absmipgap,
-            Parameter.POOL_SIZE: parameters.mip.limits.populate,
-            Parameter.POOL_GAP: parameters.mip.pool.relgap,
+            Parameter.TIME_LIMIT: parameters.timelimit,  # pyright: ignore[reportAttributeAccessIssue]
+            Parameter.FEASIBILITY_TOL: parameters.simplex.tolerances.feasibility,  # pyright: ignore[reportAttributeAccessIssue]
+            Parameter.OPTIMALITY_TOL: parameters.simplex.tolerances.optimality,  # pyright: ignore[reportAttributeAccessIssue]
+            Parameter.INT_FEASIBILITY_TOL: parameters.mip.tolerances.integrality,  # pyright: ignore[reportAttributeAccessIssue]
+            Parameter.MIP_ABS_GAP: parameters.mip.tolerances.mipgap,  # pyright: ignore[reportAttributeAccessIssue]
+            Parameter.MIP_REL_GAP: parameters.mip.tolerances.absmipgap,  # pyright: ignore[reportAttributeAccessIssue]
+            Parameter.POOL_SIZE: parameters.mip.limits.populate,  # pyright: ignore[reportAttributeAccessIssue]
+            Parameter.POOL_GAP: parameters.mip.pool.relgap,  # pyright: ignore[reportAttributeAccessIssue]
         }
 
         self.set_logging(False)
@@ -71,7 +71,7 @@ class CplexSolver(Solver):
             self.vartype_mapping[vartype] for (_, _, vartype) in var_dict.values()
         ]
 
-        self.problem.variables.add(names=var_ids, lb=lbs, ub=ubs, types=vartypes)
+        self.problem.variables.add(names=var_ids, lb=lbs, ub=ubs, types=vartypes)  # pyright: ignore[reportArgumentType]
 
         self.variables.extend(var_ids)
         self._cached_lower_bounds.update(dict(zip(var_ids, lbs)))
@@ -89,7 +89,10 @@ class CplexSolver(Solver):
         rhs_all = [rhs for (_, _, rhs) in constr_dict.values()]
 
         self.problem.linear_constraints.add(
-            lin_expr=lhs_all, senses=sense_all, rhs=rhs_all, names=constr_ids
+            lin_expr=lhs_all,
+            senses=sense_all,  # pyright: ignore[reportArgumentType]
+            rhs=rhs_all,
+            names=constr_ids,
         )
         self.constraints.extend(constr_ids)
 
