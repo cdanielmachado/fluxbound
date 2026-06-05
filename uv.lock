@@ -20,6 +20,28 @@ wheels = [
 ]
 
 [[package]]
+name = "cplex"
+version = "22.2.0.0"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a3/9f/80e735d576bd340aa0f90171eff561c452a3e14c9340473130be2a829e5c/cplex-22.2.0.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:7cddbeb53ae44ff7d49bff206522a34715aeb97c371e4fca4b0452466e1e85bd", size = 38471586, upload-time = "2026-05-26T13:38:07.488Z" },
+    { url = "https://files.pythonhosted.org/packages/b0/f0/6af700b3225a54e79ede2e5276f86531a329713022fd1f8a0edbd88376f6/cplex-22.2.0.0-cp312-cp312-manylinux2014_aarch64.whl", hash = "sha256:1ca4705dc3870166564b8ea96b892ba7431f8b7460b54ce3901b5bdde9910f32", size = 45293425, upload-time = "2026-05-26T13:38:10.729Z" },
+    { url = "https://files.pythonhosted.org/packages/ac/1c/9a8854800c145c506d2ee0870c5fa08c59c0e5ae013fd72537772fddf917/cplex-22.2.0.0-cp312-cp312-manylinux2014_ppc64le.whl", hash = "sha256:d617a390395c7fc826514cc0ff63b0228c233725ccf53ffc86b42620922af25b", size = 50937279, upload-time = "2026-05-26T13:38:14.666Z" },
+    { url = "https://files.pythonhosted.org/packages/86/7c/e88f74e3bba98d688e4d474a339e656a18ead7db71b34b032cc567b3a46f/cplex-22.2.0.0-cp312-cp312-manylinux2014_x86_64.whl", hash = "sha256:d7db32e80616d047b1316a6d37087c2d9bf9d4018464deca4017b9188c1662bd", size = 52215241, upload-time = "2026-05-26T13:38:18.279Z" },
+    { url = "https://files.pythonhosted.org/packages/98/9b/b97e21bbd473fd79887b2ad9226f22214ed21b7421129b243bee16388184/cplex-22.2.0.0-cp312-cp312-win_amd64.whl", hash = "sha256:1d7ec1320ae67776c5ba6ea97129315f7ba1e30c98b12b49bec4a7300b544e1c", size = 32681774, upload-time = "2026-05-26T13:38:21.735Z" },
+    { url = "https://files.pythonhosted.org/packages/eb/f2/c4f6af32b02f6db2f93ee1a32c9d298dccc013a6623a325204bb830f5431/cplex-22.2.0.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:6873b71ed6f892d1202d139195045c8298920fbcc4132034144c128dee08e62f", size = 38474169, upload-time = "2026-05-26T13:38:24.715Z" },
+    { url = "https://files.pythonhosted.org/packages/00/37/b656100ba9e5b5a8ade60f2885d5b8799bde427f0bb6a140758681f20e2c/cplex-22.2.0.0-cp313-cp313-manylinux2014_aarch64.whl", hash = "sha256:4ee41f4f1378669063bc80583ff9f2c2d6630670cf76d5d4bc6418db2954a74f", size = 45294854, upload-time = "2026-05-26T13:38:28.683Z" },
+    { url = "https://files.pythonhosted.org/packages/e1/79/fad7526f08f5c5825a359d315b6eb4b2df3b344068378397cd66217d5c37/cplex-22.2.0.0-cp313-cp313-manylinux2014_ppc64le.whl", hash = "sha256:4b27e465189dc409e1b49330085fe86a49f8eb1ae0b4fa47793db327b856d7fe", size = 50938613, upload-time = "2026-05-26T13:38:32.141Z" },
+    { url = "https://files.pythonhosted.org/packages/e7/24/2eb01431e2132505595f1061fc0ff5ce8d688e98582c3b5f53a66e99551b/cplex-22.2.0.0-cp313-cp313-manylinux2014_x86_64.whl", hash = "sha256:912a82c308e5aeb091e0effa204f406145e5e76002ca6ca826795a51610fd1d4", size = 52217085, upload-time = "2026-05-26T13:38:35.341Z" },
+    { url = "https://files.pythonhosted.org/packages/13/bf/372d59944e449ea89073a56dce5acd8c8422a63e332468d3d336b5ec3a16/cplex-22.2.0.0-cp313-cp313-win_amd64.whl", hash = "sha256:a509b3a8821e45cf8c4e9aa081c1e3003c6b8666f7dbf99cea5952a0ed566dfb", size = 32682519, upload-time = "2026-05-26T13:38:38.265Z" },
+    { url = "https://files.pythonhosted.org/packages/bf/ef/9b3d99386d7c74c518fe331a6c2a371e68e2044054e5fb3adcd59dd0b1a0/cplex-22.2.0.0-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:5323e787c84434a291284d48e71ea1b7ff4d0b3f39d3e200a1739e8764f2e663", size = 38474485, upload-time = "2026-05-26T13:38:41.704Z" },
+    { url = "https://files.pythonhosted.org/packages/08/b1/fefbc647f6234e114261b258eee3bfed6eab97defc3fa18df01553fbb938/cplex-22.2.0.0-cp314-cp314-manylinux2014_aarch64.whl", hash = "sha256:f3d3e430923880c704a9522dd706820a3f1a8f19ec5d9ed90f1cf5a5c604f926", size = 45295071, upload-time = "2026-05-26T13:38:44.66Z" },
+    { url = "https://files.pythonhosted.org/packages/cc/48/3390fb6cc4768a4ef5a96dae88f0691ac03c4f44afd6638748d957b1f2d7/cplex-22.2.0.0-cp314-cp314-manylinux2014_ppc64le.whl", hash = "sha256:f3818a7520c1feba36a7310973eae651f5480f4f3db2293f3e79bedf627070ad", size = 50939013, upload-time = "2026-05-26T13:38:48.305Z" },
+    { url = "https://files.pythonhosted.org/packages/a2/4c/fb93327072375f1e864b03ea9518af0ed4cf66bb08643ff01537d0df868b/cplex-22.2.0.0-cp314-cp314-manylinux2014_x86_64.whl", hash = "sha256:7a593a060263b737a36552ef2a18cb27263b0158fec1914c46389beb846ec00b", size = 52216930, upload-time = "2026-05-26T13:38:51.695Z" },
+    { url = "https://files.pythonhosted.org/packages/b7/10/ef1d4ab6738242ea29cca3237b510defb771c1324df4f761098ca8058150/cplex-22.2.0.0-cp314-cp314-win_amd64.whl", hash = "sha256:34b101f7302381c664a3064127a74c74ea58cbf622519d1a347a519062fec1fd", size = 32682362, upload-time = "2026-05-26T13:38:55.121Z" },
+]
+
+[[package]]
 name = "fluxbound"
 version = "0.1.0"
 source = { editable = "." }
@@ -32,6 +54,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "cplex" },
     { name = "gurobipy" },
     { name = "pyright" },
     { name = "pytest" },
@@ -48,6 +71,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "cplex", specifier = ">=22.2.0.0" },
     { name = "gurobipy", specifier = ">=13.0.2" },
     { name = "pyright", specifier = ">=1.1.410" },
     { name = "pytest", specifier = ">=9.0.3" },

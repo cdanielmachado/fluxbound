@@ -83,7 +83,7 @@ class GurobiSolver(Solver):
         if constr_id in self.constraints:
             self.problem.remove(self.problem.getConstrByName(constr_id))  # pyright: ignore[reportArgumentType, reportCallIssue, reportAttributeAccessIssue]
         else:
-            print("Constraint not in problem:", constr_id)
+            warn("Constraint not in problem: " + constr_id)
 
     def set_objective(self, objective: str | dict, minimize: bool = True) -> None:
 

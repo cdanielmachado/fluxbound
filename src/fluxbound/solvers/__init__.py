@@ -18,6 +18,14 @@ except ImportError:
     pass
 
 
+try:
+    from .cplex_wrapper import CplexSolver
+
+    available_solvers["cplex"] = CplexSolver
+except ImportError:
+    pass
+
+
 default_solver: str | None = None
 
 
