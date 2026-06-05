@@ -2,10 +2,11 @@ from pathlib import Path
 
 from pytest import approx
 
-from fluxbound import FBA, load_model
+from fluxbound import FBA, load_model, set_default_solver
 
 TEST_DATA = str(Path(__file__).parent) + "/data/"
 
+set_default_solver('scip')
 
 def test_fba_core():
 
