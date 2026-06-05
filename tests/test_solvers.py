@@ -15,9 +15,14 @@ def test_scip():
         warn("SCIP not found, skipping test.")
     else:
         model = load_model(TEST_DATA + "e_coli_core.xml")
+
         sol = FBA(model)
         assert sol.status.value == "Optimal"
         assert approx(sol.fobj, 0.001) == 0.874
+
+        sol = FBA(model, constraints={"R_EX_o2_e": 0}, objective="R_ATPM")
+        assert sol.status.value == "Optimal"
+        assert approx(sol.fobj, 0.1) == 27.5
 
 
 def test_gurobi():
@@ -27,9 +32,14 @@ def test_gurobi():
         warn("Gurobi not found, skipping test.")
     else:
         model = load_model(TEST_DATA + "e_coli_core.xml")
+
         sol = FBA(model)
         assert sol.status.value == "Optimal"
         assert approx(sol.fobj, 0.001) == 0.874
+
+        sol = FBA(model, constraints={"R_EX_o2_e": 0}, objective="R_ATPM")
+        assert sol.status.value == "Optimal"
+        assert approx(sol.fobj, 0.1) == 27.5
 
 
 def test_cplex():
@@ -39,6 +49,11 @@ def test_cplex():
         warn("CPLEX not found, skipping test.")
     else:
         model = load_model(TEST_DATA + "e_coli_core.xml")
+
         sol = FBA(model)
         assert sol.status.value == "Optimal"
         assert approx(sol.fobj, 0.001) == 0.874
+
+        sol = FBA(model, constraints={"R_EX_o2_e": 0}, objective="R_ATPM")
+        assert sol.status.value == "Optimal"
+        assert approx(sol.fobj, 0.1) == 27.5
