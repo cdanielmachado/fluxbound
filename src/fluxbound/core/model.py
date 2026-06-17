@@ -259,11 +259,7 @@ class Model(Base):
         return self._met_rxn_lookup
 
     def get_reactions_by_type(self, reaction_type: ReactionType) -> list:
-        return [
-            rxn.id
-            for rxn in self.reactions.values()
-            if rxn.rtype == reaction_type
-        ]
+        return [rxn.id for rxn in self.reactions.values() if rxn.rtype == reaction_type]
 
     def get_exchange_reactions(self) -> list:
         return self.get_reactions_by_type(ReactionType.EXCHANGE)

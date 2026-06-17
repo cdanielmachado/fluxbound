@@ -2,7 +2,7 @@ from pathlib import Path
 
 from pytest import approx
 
-from fluxbound import FBA, load_model, set_default_solver
+from fluxbound import FBA, Environment, load_model, set_default_solver
 
 TEST_DATA = str(Path(__file__).parent) + "/data/"
 
@@ -32,3 +32,24 @@ def test_fba_gem():
     sol = FBA(model, parsimonious=True)
     assert sol.status.value == "Optimal"
     assert approx(sol.fobj, 0.1) == 769.8
+
+
+def test_environment():
+    model = load_model(TEST_DATA + "e_coli_core.xml")
+    model.set_flux_bounds("R_ATPM", lb=0)
+
+    env = Environment.empty(model, inplace=False)
+    sol = FBA(model, constraints=env)
+    assert sol.fobj == 0
+
+    env = Environment.complete(model, inplace=False)
+    sol = FBA(model, constraints=env)
+    assert approx(sol.fobj, 0.001) == 1.366
+
+    Environment.empty(model, inplace=True)
+    sol = FBA(model)
+    assert sol.fobj == 0
+
+    Environment.complete(model, inplace=True)
+    sol = FBA(model)
+    assert approx(sol.fobj, 0.001) == 1.366

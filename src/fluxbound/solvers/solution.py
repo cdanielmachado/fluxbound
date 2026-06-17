@@ -54,10 +54,13 @@ class Solution:
         self.values: dict | None = values
         self.shadow_prices: dict | None = shadow_prices
 
-    def __str__(self):
-        return f"Objective: {self.fobj:.4g}\nStatus: {self.status.value}\n"
+    def __str__(self) -> str:
+        if self.fobj is None:
+            return f"Status: {self.status.value}\n"
+        else:
+            return f"Objective: {self.fobj:.4g}\nStatus: {self.status.value}\n"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self)
 
     def show_values(

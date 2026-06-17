@@ -66,7 +66,7 @@ def load_compartments(sbml_model: sb.Model, model: Model) -> None:
         size = compartment.getSize()
         if not isfinite(size):
             size = 1.0
-        external = False 
+        external = False
         comp = Compartment(
             compartment.getId(),
             name=compartment.getName(),
@@ -111,7 +111,7 @@ def load_reactions(
         stoichiometry = load_stoichiometry(reaction)
         lb, ub = load_bounds(reaction, is_fbc, params)
         gpr = load_gpr(reaction) if is_fbc else None
-        rtype = ReactionType.OTHER 
+        rtype = ReactionType.OTHER
         rxn = Reaction(
             reaction.getId(),
             name=reaction.getName(),
@@ -348,7 +348,6 @@ def apply_heuristics(model: Model) -> None:
             counter[comp] += 1
 
     ext_comp = counter.most_common(1)[0][0]
-    print("ext_comp: ", ext_comp)
 
     for c_id, comp in model.compartments.items():
         comp.external = bool(c_id == ext_comp)
