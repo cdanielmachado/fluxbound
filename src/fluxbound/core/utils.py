@@ -19,3 +19,11 @@ class AttrDict(dict):
 
     def __dir__(self):
         return list(self.keys()) + list(super().__dir__())
+
+
+def print_linear_expr(lin_expr: dict) -> str:
+    def format_coeff(c, x):
+        return x if c == 1.0 else f"{c} {x}"
+
+    tokens = [format_coeff(c, x) for (x, c) in lin_expr.items()]
+    return " + ".join(tokens)

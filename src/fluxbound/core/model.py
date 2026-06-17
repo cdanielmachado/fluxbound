@@ -1,8 +1,9 @@
+from collections import Counter
 from enum import Enum
 from math import inf
 from warnings import warn
 
-from .utils import AttrDict, valid_sbml_id
+from .utils import AttrDict, print_linear_expr, valid_sbml_id
 
 
 class Base:
@@ -84,12 +85,10 @@ class GPR:
 
 
 class ReactionType(Enum):
-    """Enumeration of possible reaction types."""
-
-    ENZYMATIC = "enzymatic"
+    INTERNAL = "internal"
     TRANSPORT = "transport"
     EXCHANGE = "exchange"
-    UNBALANCED = "unbalanced"
+    SINK_OR_DEMAND = "sink/demand"
     OTHER = "other"
 
 
@@ -134,19 +133,11 @@ class Reaction(Base):
 
     def to_string(self) -> str:
 
-        def format_coeff(coeff, m_id):
-            return m_id if coeff == 1.0 else f"{coeff} {m_id}"
+        lhs = {m_id: -coeff for m_id, coeff in self.stoichiometry.items() if coeff < 0}
+        lhs = print_linear_expr(lhs)
 
-        lhs = " + ".join(
-            format_coeff(-coeff, m_id)
-            for m_id, coeff in self.stoichiometry.items()
-            if coeff < 0
-        )
-        rhs = " + ".join(
-            format_coeff(coeff, m_id)
-            for m_id, coeff in self.stoichiometry.items()
-            if coeff > 0
-        )
+        rhs = {m_id: coeff for m_id, coeff in self.stoichiometry.items() if coeff > 0}
+        rhs = print_linear_expr(rhs)
 
         if self.lb < 0:
             if self.ub <= 0:
@@ -220,11 +211,34 @@ class Model(Base):
 
         self.reactions[rxn.id] = rxn
 
-    def to_string(self) -> str:
-        return "\n".join(rxn.to_string() for rxn in self.reactions.values())
+    def print(self) -> None:
+        for rxn in self.reactions.values():
+            print(rxn.to_string())
+
+    def summary(self) -> str:
+        repr = f"Model: {self.id}\n"
+        repr += f"  - Genes: {len(self.genes)}\n"
+        repr += f"  - Metabolites: {len(self.metabolites)}\n"
+
+        count_mets = Counter()
+        for met in self.metabolites.values():
+            count_mets[met.compartment] += 1
+        for c_id, total in count_mets.most_common():
+            repr += f"      {c_id}: {total}\n"
+
+        repr += f"  - Reactions: {len(self.reactions)}\n"
+
+        count_rxns = Counter()
+        for rxn in self.reactions.values():
+            count_rxns[rxn.rtype.value] += 1
+        for rtype, total in count_rxns.most_common():
+            repr += f"      {rtype}: {total}\n"
+
+        repr += f"  - Obj: {print_linear_expr(self.objective)}\n"
+        return repr
 
     def __str__(self) -> str:
-        return self.to_string()
+        return self.summary()
 
     def update(self) -> None:
         self._updated = True

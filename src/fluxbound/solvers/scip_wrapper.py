@@ -218,7 +218,7 @@ class SCIPSolver(Solver):
             scip_param = parameter_mapping[parameter]
             self.problem.setParam(scip_param, value)
         else:
-            raise Exception("Parameter unknown (or not yet supported).")
+            raise Exception(f"Unknown parameter: {str(parameter)}")
 
     def write_to_file(self, filename: str) -> None:
         self.problem.writeProblem(filename)

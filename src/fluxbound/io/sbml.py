@@ -1,5 +1,6 @@
 import os
 import re
+from collections import Counter
 from math import inf, isfinite
 from warnings import warn
 
@@ -55,6 +56,7 @@ def load_model(filename: str) -> Model:
     load_reactions(sbml_model, model, is_fbc, params)
     if is_fbc:
         load_objective(sbml_model, model)
+    apply_heuristics(model)
 
     return model
 
@@ -64,7 +66,7 @@ def load_compartments(sbml_model: sb.Model, model: Model) -> None:
         size = compartment.getSize()
         if not isfinite(size):
             size = 1.0
-        external = False  # TODO: determine if compartment is external
+        external = False 
         comp = Compartment(
             compartment.getId(),
             name=compartment.getName(),
@@ -109,7 +111,7 @@ def load_reactions(
         stoichiometry = load_stoichiometry(reaction)
         lb, ub = load_bounds(reaction, is_fbc, params)
         gpr = load_gpr(reaction) if is_fbc else None
-        rtype = ReactionType.OTHER  # TODO: determine reaction type
+        rtype = ReactionType.OTHER 
         rxn = Reaction(
             reaction.getId(),
             name=reaction.getName(),
@@ -334,6 +336,40 @@ def recursive_node_parser(node: sb.XMLNode, cache: dict) -> None:
 
     for i in range(node.getNumChildren()):
         recursive_node_parser(node.getChild(i), cache)
+
+
+def apply_heuristics(model: Model) -> None:
+    counter = Counter()
+
+    for rxn in model.reactions.values():
+        if len(rxn.stoichiometry) == 1:
+            m_id = list(rxn.stoichiometry.keys())[0]
+            comp = model.metabolites[m_id].compartment
+            counter[comp] += 1
+
+    ext_comp = counter.most_common(1)[0][0]
+    print("ext_comp: ", ext_comp)
+
+    for c_id, comp in model.compartments.items():
+        comp.external = bool(c_id == ext_comp)
+
+    for rxn in model.reactions.values():
+        subs = [m_id for m_id, coeff in rxn.stoichiometry.items() if coeff < 0]
+        prods = [m_id for m_id, coeff in rxn.stoichiometry.items() if coeff > 0]
+        if len(subs) == 0 or len(prods) == 0:
+            if len(rxn.stoichiometry) == 1:
+                m_id = list(rxn.stoichiometry.keys())[0]
+                comp = model.metabolites[m_id].compartment
+                if model.compartments[comp].external:
+                    rxn.rtype = ReactionType.EXCHANGE
+                else:
+                    rxn.rtype = ReactionType.SINK_OR_DEMAND
+        else:
+            comps = {model.metabolites[m_id].compartment for m_id in rxn.stoichiometry}
+            if len(comps) == 1:
+                rxn.rtype = ReactionType.INTERNAL
+            else:
+                rxn.rtype = ReactionType.TRANSPORT
 
 
 def save_model(model: Model, filename: str) -> None:

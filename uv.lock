@@ -20,6 +20,28 @@ wheels = [
 ]
 
 [[package]]
+name = "cplex"
+version = "22.2.0.0"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a3/9f/80e735d576bd340aa0f90171eff561c452a3e14c9340473130be2a829e5c/cplex-22.2.0.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:7cddbeb53ae44ff7d49bff206522a34715aeb97c371e4fca4b0452466e1e85bd", size = 38471586, upload-time = "2026-05-26T13:38:07.488Z" },
+    { url = "https://files.pythonhosted.org/packages/b0/f0/6af700b3225a54e79ede2e5276f86531a329713022fd1f8a0edbd88376f6/cplex-22.2.0.0-cp312-cp312-manylinux2014_aarch64.whl", hash = "sha256:1ca4705dc3870166564b8ea96b892ba7431f8b7460b54ce3901b5bdde9910f32", size = 45293425, upload-time = "2026-05-26T13:38:10.729Z" },
+    { url = "https://files.pythonhosted.org/packages/ac/1c/9a8854800c145c506d2ee0870c5fa08c59c0e5ae013fd72537772fddf917/cplex-22.2.0.0-cp312-cp312-manylinux2014_ppc64le.whl", hash = "sha256:d617a390395c7fc826514cc0ff63b0228c233725ccf53ffc86b42620922af25b", size = 50937279, upload-time = "2026-05-26T13:38:14.666Z" },
+    { url = "https://files.pythonhosted.org/packages/86/7c/e88f74e3bba98d688e4d474a339e656a18ead7db71b34b032cc567b3a46f/cplex-22.2.0.0-cp312-cp312-manylinux2014_x86_64.whl", hash = "sha256:d7db32e80616d047b1316a6d37087c2d9bf9d4018464deca4017b9188c1662bd", size = 52215241, upload-time = "2026-05-26T13:38:18.279Z" },
+    { url = "https://files.pythonhosted.org/packages/98/9b/b97e21bbd473fd79887b2ad9226f22214ed21b7421129b243bee16388184/cplex-22.2.0.0-cp312-cp312-win_amd64.whl", hash = "sha256:1d7ec1320ae67776c5ba6ea97129315f7ba1e30c98b12b49bec4a7300b544e1c", size = 32681774, upload-time = "2026-05-26T13:38:21.735Z" },
+    { url = "https://files.pythonhosted.org/packages/eb/f2/c4f6af32b02f6db2f93ee1a32c9d298dccc013a6623a325204bb830f5431/cplex-22.2.0.0-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:6873b71ed6f892d1202d139195045c8298920fbcc4132034144c128dee08e62f", size = 38474169, upload-time = "2026-05-26T13:38:24.715Z" },
+    { url = "https://files.pythonhosted.org/packages/00/37/b656100ba9e5b5a8ade60f2885d5b8799bde427f0bb6a140758681f20e2c/cplex-22.2.0.0-cp313-cp313-manylinux2014_aarch64.whl", hash = "sha256:4ee41f4f1378669063bc80583ff9f2c2d6630670cf76d5d4bc6418db2954a74f", size = 45294854, upload-time = "2026-05-26T13:38:28.683Z" },
+    { url = "https://files.pythonhosted.org/packages/e1/79/fad7526f08f5c5825a359d315b6eb4b2df3b344068378397cd66217d5c37/cplex-22.2.0.0-cp313-cp313-manylinux2014_ppc64le.whl", hash = "sha256:4b27e465189dc409e1b49330085fe86a49f8eb1ae0b4fa47793db327b856d7fe", size = 50938613, upload-time = "2026-05-26T13:38:32.141Z" },
+    { url = "https://files.pythonhosted.org/packages/e7/24/2eb01431e2132505595f1061fc0ff5ce8d688e98582c3b5f53a66e99551b/cplex-22.2.0.0-cp313-cp313-manylinux2014_x86_64.whl", hash = "sha256:912a82c308e5aeb091e0effa204f406145e5e76002ca6ca826795a51610fd1d4", size = 52217085, upload-time = "2026-05-26T13:38:35.341Z" },
+    { url = "https://files.pythonhosted.org/packages/13/bf/372d59944e449ea89073a56dce5acd8c8422a63e332468d3d336b5ec3a16/cplex-22.2.0.0-cp313-cp313-win_amd64.whl", hash = "sha256:a509b3a8821e45cf8c4e9aa081c1e3003c6b8666f7dbf99cea5952a0ed566dfb", size = 32682519, upload-time = "2026-05-26T13:38:38.265Z" },
+    { url = "https://files.pythonhosted.org/packages/bf/ef/9b3d99386d7c74c518fe331a6c2a371e68e2044054e5fb3adcd59dd0b1a0/cplex-22.2.0.0-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:5323e787c84434a291284d48e71ea1b7ff4d0b3f39d3e200a1739e8764f2e663", size = 38474485, upload-time = "2026-05-26T13:38:41.704Z" },
+    { url = "https://files.pythonhosted.org/packages/08/b1/fefbc647f6234e114261b258eee3bfed6eab97defc3fa18df01553fbb938/cplex-22.2.0.0-cp314-cp314-manylinux2014_aarch64.whl", hash = "sha256:f3d3e430923880c704a9522dd706820a3f1a8f19ec5d9ed90f1cf5a5c604f926", size = 45295071, upload-time = "2026-05-26T13:38:44.66Z" },
+    { url = "https://files.pythonhosted.org/packages/cc/48/3390fb6cc4768a4ef5a96dae88f0691ac03c4f44afd6638748d957b1f2d7/cplex-22.2.0.0-cp314-cp314-manylinux2014_ppc64le.whl", hash = "sha256:f3818a7520c1feba36a7310973eae651f5480f4f3db2293f3e79bedf627070ad", size = 50939013, upload-time = "2026-05-26T13:38:48.305Z" },
+    { url = "https://files.pythonhosted.org/packages/a2/4c/fb93327072375f1e864b03ea9518af0ed4cf66bb08643ff01537d0df868b/cplex-22.2.0.0-cp314-cp314-manylinux2014_x86_64.whl", hash = "sha256:7a593a060263b737a36552ef2a18cb27263b0158fec1914c46389beb846ec00b", size = 52216930, upload-time = "2026-05-26T13:38:51.695Z" },
+    { url = "https://files.pythonhosted.org/packages/b7/10/ef1d4ab6738242ea29cca3237b510defb771c1324df4f761098ca8058150/cplex-22.2.0.0-cp314-cp314-win_amd64.whl", hash = "sha256:34b101f7302381c664a3064127a74c74ea58cbf622519d1a347a519062fec1fd", size = 32682362, upload-time = "2026-05-26T13:38:55.121Z" },
+]
+
+[[package]]
 name = "fluxbound"
 version = "0.1.0"
 source = { editable = "." }
@@ -32,6 +54,8 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "cplex" },
+    { name = "gurobipy" },
     { name = "pyright" },
     { name = "pytest" },
     { name = "ruff" },
@@ -47,9 +71,34 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "cplex", specifier = ">=22.2.0.0" },
+    { name = "gurobipy", specifier = ">=13.0.2" },
     { name = "pyright", specifier = ">=1.1.410" },
     { name = "pytest", specifier = ">=9.0.3" },
     { name = "ruff", specifier = ">=0.15.15" },
+]
+
+[[package]]
+name = "gurobipy"
+version = "13.0.2"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ab/52/84706ec7c4c8d76a7e36ac602f873e9a367dfbaa035ac145eda79b3bc983/gurobipy-13.0.2-cp312-cp312-macosx_10_13_universal2.whl", hash = "sha256:64b66660238f57b75adc9761f981524373f32ce8cdd37f4bf2f28dc1b699d1d5", size = 15988917, upload-time = "2026-05-05T10:42:49.424Z" },
+    { url = "https://files.pythonhosted.org/packages/2e/70/460e4cc66508b9025919f6c260b93211169058917153e58c0f17a57846ea/gurobipy-13.0.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:f35e404fc32921a94cbc5b047e01ad714ced23ba0c1ddf81b5e5a20bf53d757a", size = 14868660, upload-time = "2026-05-05T10:42:56.31Z" },
+    { url = "https://files.pythonhosted.org/packages/3b/e3/3ec926182acc9fbe8182fb01adecfa1abef905e142a69a7b705925056bc8/gurobipy-13.0.2-cp312-cp312-manylinux_2_26_aarch64.whl", hash = "sha256:73f8d93ac4d9c196fd7b5836a83502d41a6ed0ce72bc27ad5c2e91132431f7eb", size = 87204593, upload-time = "2026-05-05T10:43:11.838Z" },
+    { url = "https://files.pythonhosted.org/packages/e4/34/fa0fd152143ca0d1b770b9669918b2134a5d1af609c33cb445ccb7096327/gurobipy-13.0.2-cp312-cp312-win_amd64.whl", hash = "sha256:0ac0f1c7d28ad6aeec3c57f94833c918881dcbfb7238f5d5fe0a8d08b2975681", size = 11250700, upload-time = "2026-05-05T10:43:15.588Z" },
+    { url = "https://files.pythonhosted.org/packages/3e/de/d32f793c5c208f34b289049c05fbc003ed5c6818e7e84c113651992cc923/gurobipy-13.0.2-cp313-cp313-macosx_10_13_universal2.whl", hash = "sha256:6cc4be757540f48b3f206427cacbcd78f5e8c07dddd8654e3b1c6e3b87327082", size = 15978090, upload-time = "2026-05-05T10:43:18.396Z" },
+    { url = "https://files.pythonhosted.org/packages/a5/11/77458930745fb661a0b5aea39211101a22c5413161bb10f954f015af3f70/gurobipy-13.0.2-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:1d7840fdf7928a6faf9fff795dde727940164e87d0bced98075df1ead38b12f9", size = 14866672, upload-time = "2026-05-05T10:43:21.508Z" },
+    { url = "https://files.pythonhosted.org/packages/79/08/70c909650ae684a4d8468fec8b2e5d2f3be5b7f602e48b3cffd1e67ee6cc/gurobipy-13.0.2-cp313-cp313-manylinux_2_26_aarch64.whl", hash = "sha256:407f87b87b556b2d73f738ca4b9a41c3aed0ee412958a68b127d2108a8c300e2", size = 87208386, upload-time = "2026-05-05T10:43:26.333Z" },
+    { url = "https://files.pythonhosted.org/packages/fd/7f/e68bd10b04c87f60d82f0d81340cf23e6e8d5e012dbac474dffbdf990657/gurobipy-13.0.2-cp313-cp313-win_amd64.whl", hash = "sha256:5b26c7ab11fd406f6ecf10958728b9f9344b818fee86db5b516a46aefe8400f2", size = 11244495, upload-time = "2026-05-05T10:43:29.624Z" },
+    { url = "https://files.pythonhosted.org/packages/83/ae/0481b8f6d883b1907713bb9f92313257d3f1b7608f02d73f27d6c39516ae/gurobipy-13.0.2-cp314-cp314-macosx_10_15_universal2.whl", hash = "sha256:a827eff3ae926b67625026b80365007ab7be398e60e188753268dc1f0e876b3e", size = 15848186, upload-time = "2026-05-05T10:43:32.11Z" },
+    { url = "https://files.pythonhosted.org/packages/30/ce/b62840162e24e03bd55fc265882fb9eb602d47a4dc27a9b7775c4741993e/gurobipy-13.0.2-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:f82340708955c24ab20f5d41b4d7fbd0e94cf4e7740841360e2024c9d222961f", size = 14766019, upload-time = "2026-05-05T10:43:34.359Z" },
+    { url = "https://files.pythonhosted.org/packages/27/b9/467bce6c7b03883b8dc1646756b5c870c7a156c89cf13ca32dfcee0cc7b3/gurobipy-13.0.2-cp314-cp314-manylinux_2_26_aarch64.whl", hash = "sha256:f7714d69d778af882d756e222340920e8dbfc004a509998604cb9b4cb1d43242", size = 87137188, upload-time = "2026-05-05T10:43:38.447Z" },
+    { url = "https://files.pythonhosted.org/packages/1a/50/22546477a0277d1eaf7f67da5629c27782b63b85daeeabf394ce52627cac/gurobipy-13.0.2-cp314-cp314-win_amd64.whl", hash = "sha256:443d79ab626c383f01f0ea56c37533c9023e4d65abf8356563d2cf8da513001d", size = 11465255, upload-time = "2026-05-05T10:43:53.498Z" },
+    { url = "https://files.pythonhosted.org/packages/39/5c/06e98babc2b0df16f2e42e52a222b4f880bd0a59e7e025ced25c47b7aeae/gurobipy-13.0.2-cp314-cp314t-macosx_10_15_universal2.whl", hash = "sha256:57c7c129f9c305296c12130bb0d8f0157785e4aaf5cee501174b8320a3a9195d", size = 16161861, upload-time = "2026-05-05T10:43:41.663Z" },
+    { url = "https://files.pythonhosted.org/packages/42/21/6b0ceecfc45ebed38c5f9f3d87441baad8832743eaa85a31ac09ba4543e7/gurobipy-13.0.2-cp314-cp314t-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:29a7449544e9b17def147b8c77d0eb30c8f343e2900bc0b004877b903ed41595", size = 14761111, upload-time = "2026-05-05T10:43:44.075Z" },
+    { url = "https://files.pythonhosted.org/packages/1e/d4/b3b915fdce536d1331d45305cc55e8952694109377cbfe4e82c1fa38c986/gurobipy-13.0.2-cp314-cp314t-manylinux_2_26_aarch64.whl", hash = "sha256:8207e3503a74c43a19c120c6c117a5c6892d060e5f803fe072209be127a984e0", size = 87131303, upload-time = "2026-05-05T10:43:47.705Z" },
+    { url = "https://files.pythonhosted.org/packages/b3/6b/2532e54305cf3a905f4df5a050d51f066391829f18f3c167a6ccd15da28d/gurobipy-13.0.2-cp314-cp314t-win_amd64.whl", hash = "sha256:9e2f956649fa46304a5aa2d18dbccfdb6d742092db2f0f798d37a4c3ccca5e99", size = 11906319, upload-time = "2026-05-05T10:43:50.882Z" },
 ]
 
 [[package]]
