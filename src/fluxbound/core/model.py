@@ -1,5 +1,6 @@
 from enum import Enum
 from math import inf
+from warnings import warn
 
 from .utils import AttrDict, valid_sbml_id
 
@@ -242,3 +243,27 @@ class Model(Base):
                     self._met_rxn_lookup[m_id][r_id] = coeff
 
         return self._met_rxn_lookup
+
+    def get_reactions_by_type(self, reaction_type: ReactionType) -> list:
+        return [
+            rxn.id
+            for rxn in self.reactions.values()
+            if rxn.rtype == reaction_type
+        ]
+
+    def get_exchange_reactions(self) -> list:
+        return self.get_reactions_by_type(ReactionType.EXCHANGE)
+
+    def set_flux_bounds(
+        self, r_id, lb: float | None = None, ub: float | None = None
+    ) -> None:
+
+        if r_id not in self.reactions:
+            warn(f"Reaction {r_id} not found")
+            return
+
+        if lb is not None:
+            self.reactions[r_id].lb = lb
+
+        if ub is not None:
+            self.reactions[r_id].ub = ub
