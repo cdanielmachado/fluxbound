@@ -142,7 +142,7 @@ class Solver:
             solution = Solution(status)
 
         if constraints:
-            self.reset_bounds(old_bounds)  # pyright: ignore[reportPossiblyUnboundVariable]
+            self.reset_bounds(old_bounds)  # pyright: ignore
 
         return solution
 

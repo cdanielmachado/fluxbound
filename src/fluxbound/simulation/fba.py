@@ -63,7 +63,7 @@ def FBA(
         if isinstance(objective, str):
             objective = {objective: 1}
 
-        solver.add_constraint("obj", objective, ">", obj_frac * pre_solution.fobj)  # pyright: ignore[reportOperatorIssue, reportArgumentType]
+        solver.add_constraint("obj", objective, ">", obj_frac * pre_solution.fobj)  # pyright: ignore
 
         if solver.reuse_for is None:
             solver.reuse_for = "pFBA"

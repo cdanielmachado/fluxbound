@@ -98,13 +98,13 @@ class Environment(AttrDict):
 
         if exclusive:
             env = Environment.empty(model, inplace=False)
-            env.update(self)  # pyright: ignore[reportOptionalMemberAccess]
+            env.update(self)  # pyright: ignore
         else:
             env = self
 
         constraints = {}
 
-        for r_id, (lb, ub) in env.items():  # pyright: ignore[reportOptionalMemberAccess]
+        for r_id, (lb, ub) in env.items():  # pyright: ignore
             if r_id in model.reactions:
                 if inplace:
                     model.set_flux_bounds(r_id, lb, ub)
@@ -134,7 +134,7 @@ class Environment(AttrDict):
             del env[r_id]
 
         if not inplace:
-            return env  # pyright: ignore[reportReturnType]
+            return env  # pyright: ignore
 
     @staticmethod
     def from_compounds(

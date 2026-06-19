@@ -30,7 +30,7 @@ def load_sbml(filename: str) -> sb.Model:
         raise IOError("Model file not found")
 
     reader = sb.SBMLReader()
-    document = reader.readSBML(filename)  # pyright: ignore[reportArgumentType]
+    document = reader.readSBML(filename)  # pyright: ignore
     sbml_model = document.getModel()
 
     if sbml_model is None:
@@ -187,7 +187,7 @@ def easy_gpr_parse(fbc_gpr: sb.Association) -> GPR:
     gpr = GPR()
 
     if fbc_gpr.isFbcOr():
-        for item in fbc_gpr.getListOfAssociations():  # pyright: ignore[reportAttributeAccessIssue]
+        for item in fbc_gpr.getListOfAssociations():  # pyright: ignore
             protein = Protein()
             if item.isFbcAnd():
                 for subitem in item.getListOfAssociations():
@@ -202,7 +202,7 @@ def easy_gpr_parse(fbc_gpr: sb.Association) -> GPR:
             gpr.proteins.append(protein)
     elif fbc_gpr.isFbcAnd():
         protein = Protein()
-        for item in fbc_gpr.getListOfAssociations():  # pyright: ignore[reportAttributeAccessIssue]
+        for item in fbc_gpr.getListOfAssociations():  # pyright: ignore
             if item.isGeneProductRef():
                 protein.genes.append(item.getGeneProduct())
             else:
@@ -210,7 +210,7 @@ def easy_gpr_parse(fbc_gpr: sb.Association) -> GPR:
         gpr.proteins = [protein]
     elif fbc_gpr.isGeneProductRef():
         protein = Protein()
-        protein.genes = [fbc_gpr.getGeneProduct()]  # pyright: ignore[reportAttributeAccessIssue]
+        protein.genes = [fbc_gpr.getGeneProduct()]  # pyright: ignore
         gpr.proteins = [protein]
     else:
         raise RuntimeError("Unsupported GPR structure")
@@ -250,13 +250,13 @@ def fbc_association_to_sympy(node: sb.Association) -> Boolean:
 
     # GeneProductRef
     if node.isGeneProductRef():
-        gene_id = node.getGeneProduct()  # pyright: ignore[reportAttributeAccessIssue]
+        gene_id = node.getGeneProduct()  # pyright: ignore
         return Symbol(gene_id)
 
     # And
     if node.isFbcAnd():
         children = [
-            fbc_association_to_sympy(node.getAssociation(i))  # pyright: ignore[reportAttributeAccessIssue]
+            fbc_association_to_sympy(node.getAssociation(i))  # pyright: ignore
             for i in range(node.getNumAssociations())
         ]
         return And(*children)
@@ -264,7 +264,7 @@ def fbc_association_to_sympy(node: sb.Association) -> Boolean:
     # Or
     if node.isFbcOr():
         children = [
-            fbc_association_to_sympy(node.getAssociation(i))  # pyright: ignore[reportAttributeAccessIssue]
+            fbc_association_to_sympy(node.getAssociation(i))  # pyright: ignore
             for i in range(node.getNumAssociations())
         ]
         return Or(*children)

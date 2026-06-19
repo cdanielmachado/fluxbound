@@ -31,7 +31,7 @@ def FVA(
         solution = FBA(model, constraints=constraints, solver=solver)
         if solution.status != Status.OPTIMAL:
             raise RuntimeError("Unable to calculate objective: " + str(solution.status))
-        obj_min = obj_frac * solution.fobj  # pyright: ignore[reportOperatorIssue]
+        obj_min = obj_frac * solution.fobj  # pyright: ignore
         solver.add_constraint("obj_min", model.objective, ">", obj_min)
 
     if not reactions:
