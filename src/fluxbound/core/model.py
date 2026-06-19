@@ -169,8 +169,9 @@ class Model(Base):
         self.objective: AttrDict = AttrDict()
         self._updated: bool = True
         self._met_rxn_lookup: dict | None = None
+        self._gene_rxn_lookup: dict | None = None
 
-    def add_compartment(self, compartment: Compartment, replace: bool = False):
+    def add_compartment(self, compartment: Compartment, replace: bool = False) -> None:
         self._updated = False
 
         if compartment.id in self.compartments and not replace:
@@ -178,7 +179,7 @@ class Model(Base):
 
         self.compartments[compartment.id] = compartment
 
-    def add_metabolite(self, met: Metabolite, replace: bool = False):
+    def add_metabolite(self, met: Metabolite, replace: bool = False) -> None:
         self._updated = False
 
         if met.id in self.metabolites and not replace:
@@ -191,7 +192,7 @@ class Model(Base):
 
         self.metabolites[met.id] = met
 
-    def add_gene(self, gene: Gene, replace: bool = False):
+    def add_gene(self, gene: Gene, replace: bool = False) -> None:
         self._updated = False
 
         if gene.id in self.genes and not replace:
@@ -199,7 +200,7 @@ class Model(Base):
 
         self.genes[gene.id] = gene
 
-    def add_reaction(self, rxn: Reaction, replace: bool = False):
+    def add_reaction(self, rxn: Reaction, replace: bool = False) -> None:
         self._updated = False
 
         if rxn.id in self.reactions and not replace:
@@ -210,6 +211,48 @@ class Model(Base):
                 raise RuntimeError(f"Reaction {rxn.id} has invalid metabolite {m_id}.")
 
         self.reactions[rxn.id] = rxn
+
+    def remove_metabolites(self, m_ids: list, include_reactions: bool = False) -> None:
+
+        m_r_lookup = self.metabolite_reaction_lookup()
+        self._updated = False
+
+        deleted = []
+        for m_id in m_ids:
+            if m_id in self.metabolites:
+                del self.metabolites[m_id]
+                deleted.append(m_id)
+            else:
+                warn(f"Metabolite {m_id} not in model")
+
+        if include_reactions:
+            r_ids = {r_id for m_id in deleted for r_id in m_r_lookup[m_id].keys()}
+            if len(r_ids) > 0:
+                self.remove_reactions(list(r_ids))
+
+    def remove_reactions(self, r_ids: list, clean_orphans: bool = False) -> None:
+        self._updated = False
+
+        deleted = []
+        for r_id in list(r_ids):
+            if r_id in self.reactions:
+                del self.reactions[r_id]
+                deleted.append(r_id)
+            else:
+                warn(f"Reaction {r_id} not in model")
+
+        if clean_orphans:
+            m_r_lookup = self.metabolite_reaction_lookup()
+            orphan_mets = {
+                m_id for m_id, r_ids in m_r_lookup.items() if len(r_ids) == 0
+            }
+            if len(orphan_mets) > 0:
+                self.remove_metabolites(list(orphan_mets), include_reactions=False)
+
+            g_r_lookup = self.gene_reaction_lookup()
+            for g_id, rxns in g_r_lookup.items():
+                if len(rxns) == 0:
+                    del self.genes[g_id]
 
     def print(self) -> None:
         for rxn in self.reactions.values():
@@ -243,13 +286,14 @@ class Model(Base):
     def update(self) -> None:
         self._updated = True
         self._met_rxn_lookup = None
+        self._gene_rxn_lookup = None
 
     def metabolite_reaction_lookup(self) -> dict:
 
         if not self._updated:
             self.update()
 
-        if not self._met_rxn_lookup:
+        if self._met_rxn_lookup is None:
             self._met_rxn_lookup = {m_id: {} for m_id in self.metabolites}
 
             for r_id, reaction in self.reactions.items():
@@ -258,11 +302,39 @@ class Model(Base):
 
         return self._met_rxn_lookup
 
+    def gene_reaction_lookup(self) -> dict:
+
+        if not self._updated:
+            self.update()
+
+        if self._gene_rxn_lookup is None:
+            self._gene_rxn_lookup = {g_id: [] for g_id in self.genes}
+
+            for r_id, reaction in self.reactions.items():
+                if reaction.gpr is not None:
+                    for g_id in reaction.gpr.get_genes():
+                        self._gene_rxn_lookup[g_id].append(r_id)
+
+        return self._gene_rxn_lookup
+
     def get_reactions_by_type(self, reaction_type: ReactionType) -> list:
         return [rxn.id for rxn in self.reactions.values() if rxn.rtype == reaction_type]
 
     def get_exchange_reactions(self) -> list:
         return self.get_reactions_by_type(ReactionType.EXCHANGE)
+
+    def get_biomass(self) -> str:
+
+        # 1st heuristic: objective function
+        if len(self.objective) == 1:
+            return list(self.objective.keys())[0]
+
+        # 2nd heuristic: most substrates
+        n_subs = [
+            (r_id, len(rxn.get_substrates())) for r_id, rxn in self.reactions.items()
+        ]
+        n_subs.sort(key=lambda x: -x[1])
+        return n_subs[0][0]
 
     def set_flux_bounds(
         self, r_id, lb: float | None = None, ub: float | None = None
