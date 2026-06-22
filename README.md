@@ -4,7 +4,7 @@
 
 # Metabolism is... 
 
-![logo.png](logo.png)
+![logo.png](logo.png?)
 
 A minimalistic python package for flux balance analysis
 
