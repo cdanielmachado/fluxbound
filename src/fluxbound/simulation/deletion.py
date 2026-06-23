@@ -11,6 +11,7 @@ def gene_deletion(
     parsimonious: bool = False,
     constraints: dict | None = None,
     skip_silent: bool = False,
+    get_values: bool = True,
     solver: Solver | None = None,
 ) -> Solution | None:
 
@@ -22,7 +23,9 @@ def gene_deletion(
     if len(del_rxns) == 0 and skip_silent:
         return
 
-    return reaction_deletion(model, del_rxns, parsimonious, constraints, solver)
+    return reaction_deletion(
+        model, del_rxns, parsimonious, constraints, get_values, solver
+    )
 
 
 def deleted_genes_to_reactions(model: Model, genes: list) -> list:
@@ -43,6 +46,7 @@ def reaction_deletion(
     reactions: str | list,
     parsimonious: bool = False,
     constraints: dict | None = None,
+    get_values: bool = True,
     solver: Solver | None = None,
 ) -> Solution:
 
@@ -57,7 +61,13 @@ def reaction_deletion(
     for r_id in reactions:
         del_and_env[r_id] = 0
 
-    return FBA(model, parsimonious=parsimonious, constraints=del_and_env, solver=solver)
+    return FBA(
+        model,
+        parsimonious=parsimonious,
+        constraints=del_and_env,
+        get_values=get_values,
+        solver=solver,
+    )
 
 
 def essential_genes(
@@ -74,7 +84,12 @@ def essential_genes(
 
     for gene in model.genes.keys():
         sol = gene_deletion(
-            model, gene, constraints=constraints, solver=solver, skip_silent=True
+            model,
+            gene,
+            constraints=constraints,
+            solver=solver,
+            skip_silent=True,
+            get_values=False,
         )
         if sol is None:
             continue
@@ -100,7 +115,9 @@ def essential_reactions(
     essential = []
 
     for r_id in model.reactions.keys():
-        sol = reaction_deletion(model, r_id, constraints=constraints, solver=solver)
+        sol = reaction_deletion(
+            model, r_id, constraints=constraints, solver=solver, get_values=False
+        )
         if sol.status == Status.INFEASIBLE:
             essential.append(r_id)
         elif sol.status == Status.OPTIMAL:

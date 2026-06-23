@@ -159,7 +159,7 @@ wheels = [
 
 [[package]]
 name = "fluxbound"
-version = "0.1.2"
+version = "0.1.3"
 source = { editable = "." }
 dependencies = [
     { name = "pandas" },
@@ -181,10 +181,10 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "pandas" },
-    { name = "pyscipopt" },
-    { name = "python-libsbml" },
-    { name = "sympy" },
+    { name = "pandas", specifier = ">=3.0" },
+    { name = "pyscipopt", specifier = ">=6.2" },
+    { name = "python-libsbml", specifier = ">=5.21" },
+    { name = "sympy", specifier = ">=1.14" },
 ]
 
 [package.metadata.requires-dev]
