@@ -1,6 +1,6 @@
 [project]
 name = "fluxbound"
-version = "0.1.2"
+version = "0.1.3"
 description = "A minimalistic python package for flux balance analysis"
 readme = "README.md"
 authors = [
@@ -8,10 +8,10 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
-    "python-libsbml",
-    "sympy",
-    "pandas",
-    "pyscipopt",
+    "python-libsbml>=5.21",
+    "sympy>=1.14",
+    "pandas>=3.0",
+    "pyscipopt>=6.2",
 ]
 keywords = ["flux balance analysis", "metabolic modeling"]
 classifiers = [
