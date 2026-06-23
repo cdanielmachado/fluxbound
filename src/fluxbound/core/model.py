@@ -63,6 +63,9 @@ class Protein:
     def __repr__(self):
         return str(self)
 
+    def eval_rule(self, gene_state: dict) -> bool:
+        return all([gene_state.get(gene, False) for gene in self.genes])
+
 
 class GPR:
     def __init__(self):
@@ -82,6 +85,9 @@ class GPR:
 
     def get_genes(self):
         return {gene for protein in self.proteins for gene in protein.genes}
+
+    def eval_rule(self, gene_state: dict) -> bool:
+        return any([protein.eval_rule(gene_state) for protein in self.proteins])
 
 
 class ReactionType(Enum):
