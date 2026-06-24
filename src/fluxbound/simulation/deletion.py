@@ -112,6 +112,9 @@ def essential_reactions(
     if sol0.status != Status.OPTIMAL:
         raise RuntimeError("Reference condition is infeasible.")
 
+    if sol0.status == Status.OPTIMAL and abs(sol0.fobj) < 1e-6:  # pyright: ignore
+        raise RuntimeError("No growth at reference condition.")
+
     essential = []
 
     for r_id in model.reactions.keys():
