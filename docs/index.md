@@ -33,7 +33,7 @@ Loading (and inspecting) a model:
 ```python
 from fluxbound import load_model
 
-model = load_model("e_coli_core.xml")
+model = load_model('e_coli_core.xml')
 model
 
 Model: e_coli_core
@@ -57,7 +57,6 @@ Running a basic FBA simulation:
 ```python
 from fluxbound import FBA
 
-model = load_model("e_coli_core.xml")
 sol = FBA(model)
 print(sol)
 
@@ -108,7 +107,7 @@ And converting to pandas DataFrames
 
 ```python
 df = sol.to_dataframe()
-df.query("value > 30")
+df.query('value > 30')
 
               value
 R_ATPS4r  45.514010
@@ -229,9 +228,9 @@ Add elements:
 ```python
 from fluxbound import Metabolite, Reaction
 
-x = Metabolite("M_x_e", name="compound x", compartment='e')
+x = Metabolite('M_x_e', name='compound x', compartment='e')
 model.add_metabolite(x)
-r = Reaction("R_EX_x_e", stoichiometry={'M_x_e': -1}, lb=0, ub=1000)
+r = Reaction('R_EX_x_e', stoichiometry={'M_x_e': -1}, lb=0, ub=1000)
 model.add_reaction(r)
 print(model.reactions.R_EX_y_e)
 
