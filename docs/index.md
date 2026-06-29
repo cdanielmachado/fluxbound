@@ -74,12 +74,12 @@ sol = FBA(model, parsimonious=True)
 You can add additional constraints:
 
 ```python
-constr = {
+constraints = {
     'R_EX_glc__D_e': (-5, 0),
     'R_EX_o2_e': 0,
 }
 
-sol = FBA(model, constraints=constr)
+sol = FBA(model, constraints=constraints)
 ```
 
 And easily change the objective:
@@ -90,7 +90,7 @@ sol = FBA(model, objective='R_ATPM', minimize=True)
 
 ### Solution
 
-The solution object has such utilities such a filtering using regular expressions: 
+The solution object has utilities such a filtering with regular expressions: 
 
 ```python
 sol.show_values(pattern='R_EX', sort=True, abstol=0.1)
@@ -119,7 +119,7 @@ R_NADH16  38.534610
 
 ### FVA
 
-To run flux variability analysis:
+Running Flux Variability Analysis:
 
 ```python
 from fluxbound import FVA
@@ -165,12 +165,12 @@ from fluxbound import essential_genes
 genes = essential_genes(model)
 ```
 
-Remember that you can always use the constraints argument to change conditions:
+Remember: you can always use the constraints argument to change conditions:
 
 ```python
 from fluxbound import essential_reactions
 
-essential_anaerobic = essential_reactions(model, constraints={'R_EX_o2_e': 0})
+reactions = essential_reactions(model, constraints={'R_EX_o2_e': 0})
 ```
 
 ## Advanced
@@ -230,8 +230,8 @@ Add elements:
 from fluxbound import Metabolite, Reaction
 
 x = Metabolite("M_x_e", name="compound x", compartment='e')
-r = Reaction("R_EX_x_e", stoichiometry={'M_x_e': -1}, lb=0, ub=1000)
 model.add_metabolite(x)
+r = Reaction("R_EX_x_e", stoichiometry={'M_x_e': -1}, lb=0, ub=1000)
 model.add_reaction(r)
 print(model.reactions.R_EX_y_e)
 
