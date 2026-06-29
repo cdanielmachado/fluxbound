@@ -18,7 +18,18 @@ plugins:
       handlers:
         python:
           paths: [src]
+          options:
+            show_root_heading: true
+            show_root_full_path: false
+            heading_level: 3
+            members_order: source
+            show_if_no_docstring: true
+            show_bases: false
+            merge_init_into_class: true
+            show_symbol_type_heading: false
+            show_symbol_type_toc: false
 
 nav:
   - Home: index.md
+  - FAQ: faq.md
   - API: api.md
